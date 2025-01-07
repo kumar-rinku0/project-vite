@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import { QRCodeCanvas } from "qrcode.react";
 
-import "./App.css"; // Make sure this CSS file contains relevant styles
-
 const TicketPage = () => {
   const location = useLocation();
   const { userData } = location.state || {}; // Get userData from state

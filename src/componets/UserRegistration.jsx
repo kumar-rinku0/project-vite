@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
-import "./App.css";
 
 const UserRegistration = () => {
   const { eventId } = useParams(); // Get eventId from URL
