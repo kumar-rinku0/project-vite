@@ -11,6 +11,7 @@ import UserRegistration from "./componets/UserRegistration"; // Import UserRegis
 import TicketPage from "./componets/TicketPage"; // Import TicketPage
 import UrlPageQR from "./componets/UrlPageQR";
 
+// app
 function App() {
   return (
     <Router>
