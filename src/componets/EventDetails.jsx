@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { FaEdit, FaPaperPlane } from "react-icons/fa"; // Import FontAwesome icons
 
 const url = "/api";
 
 export const EventDetails = () => {
+  const { orgId } = useParams();
   const [eventData, setEventData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,7 +21,7 @@ export const EventDetails = () => {
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const response = await axios.get(`${url}/events`);
+        const response = await axios.get(`${url}/${orgId}`);
         setEventData(response.data);
         setFilteredData(response.data);
       } catch (err) {
@@ -31,7 +32,7 @@ export const EventDetails = () => {
     };
 
     fetchEventDetails();
-  }, []);
+  }, [orgId]);
 
   const handleSearchChange = (e) => {
     const query = e.target.value;
@@ -51,12 +52,15 @@ export const EventDetails = () => {
 
   const handleSubmitClick = (event) => {
     // Generate QR code data with event registration URL
-    const qrData = `${window.location.origin}/user-register/${event._id}`;
+    const eventId = event._id;
+    // const qrData = `${window.location.origin}/${orgId}/${eventId}/register-user`;
+    const qrData = `${window.location.origin}/qrcodepage`;
     navigate("/show-qr", { state: { qrCodeData: qrData } });
   };
 
   const handleEditClick = (event) => {
-    navigate(`/edit/${event._id}`);
+    const eventId = event._id;
+    navigate(`/${orgId}/edit/${eventId}`);
   };
 
   const handleEventClick = (eventId) => {
@@ -187,7 +191,7 @@ const UserDetails = ({ eventId }) => {
 
   useEffect(() => {
     axios
-      .get(`/api/users/${eventId}`)
+      .get(`/api/${eventId}`)
       .then((response) => setUsers(response.data.users))
       .catch((error) => console.error("Error fetching users:", error));
   }, [eventId]);

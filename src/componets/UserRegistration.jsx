@@ -3,13 +3,14 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router";
 
 const UserRegistration = () => {
-  const { eventId } = useParams(); // Get eventId from URL
+  const { orgId, eventId } = useParams(); // Get eventId from URL
   const [event, setEvent] = useState(null);
   const [userData, setUserData] = useState({
     name: "",
     email: "",
     mobile: "",
     eventId: eventId || "",
+    orgId: orgId || "",
   });
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -18,14 +19,14 @@ const UserRegistration = () => {
   const navigate = useNavigate(); // Navigate to the next page
 
   useEffect(() => {
-    if (eventId) {
+    if (eventId && orgId) {
       // Fetch event details
       axios
-        .get(`/api/events/${eventId}`)
+        .get(`/api/${orgId}/${eventId}`)
         .then((response) => setEvent(response.data))
         .catch((error) => console.error("Error fetching event:", error));
     }
-  }, [eventId]);
+  }, [orgId, eventId]);
 
   const handleChange = (e) => {
     setUserData({
@@ -70,7 +71,7 @@ const UserRegistration = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("/api/register-user", {
+      const response = await axios.post(`/api/${orgId}/${eventId}/register-user`, {
         ...userData,
       });
       setMessage(response.data.message);

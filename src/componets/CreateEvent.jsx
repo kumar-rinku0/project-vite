@@ -6,8 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 const url = "/api"; // API base URL
 
-export const Event = () => {
-  const { eventId } = useParams();
+export const CreateEvent = () => {
+  const { orgId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [values, setValues] = useState({
     name: "",
@@ -20,10 +20,10 @@ export const Event = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (eventId) {
+    if (orgId) {
       const fetchEventDetails = async () => {
         try {
-          const response = await axios.get(`${url}/events/${eventId}`);
+          const response = await axios.get(`${url}/${orgId}`);
           setValues(response.data);
         } catch (err) {
           console.error("Error fetching event details:", err);
@@ -34,36 +34,13 @@ export const Event = () => {
       };
       fetchEventDetails();
     }
-  }, [eventId]);
+  }, [orgId]);
 
   const handleChanges = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const response = eventId
-        ? await axios.put(`${url}/events/${eventId}`, values) // Update event
-        : await axios.post(`${url}/register-event`, values); // Register new event
-
-      toast.success("Event saved successfully", {
-        position: "top-right",
-      });
-
-      navigate(`/event-details/${response.data.id}`);
-    } catch (error) {
-      console.error("Error during submission:", error);
-      toast.error("Submission failed", {
-        position: "top-right",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="event-form-container">
@@ -71,7 +48,7 @@ export const Event = () => {
       <ToastContainer />
       <div className="event-form-card">
         <h2 className="event-form-title">
-          {eventId ? "Edit Event" : "Register Event"}
+          {orgId ? "Edit Event" : "Register Event"}
         </h2>
         <form onSubmit={handleSubmit}>
           <div>
@@ -147,7 +124,7 @@ export const Event = () => {
               className="event-form-button"
               disabled={isLoading}
             >
-              {isLoading ? "Saving..." : eventId ? "Save Changes" : "Register"}
+              {isLoading ? "Saving..." : orgId ? "Save Changes" : "Register"}
             </button>
           </div>
         </form>

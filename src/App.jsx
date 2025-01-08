@@ -3,7 +3,7 @@ import "./componets/oldstyle.css";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router";
 import UserForm from "./componets/UserForm";
-import { Event } from "./componets/Event";
+import { Event } from "./componets/CreateEvent";
 import { EventDetails } from "./componets/EventDetails";
 import EditEvent from "./componets/EditEvent";
 import ShowQR from "./componets/ShowQR";
@@ -17,16 +17,17 @@ function App() {
       <Routes>
         {/* Other routes */}
         <Route path="/" element={<UserForm />} />
-        <Route path="/event" element={<Event />} />
         <Route path="/qrcodepage" element={<UrlPageQR />} />
-        <Route path="/event-details/:eventId" element={<EventDetails />} />
-        <Route path="/edit/:id" element={<EditEvent />} />
+        {/* these 4 routes has to protect! */}
+        <Route path="/:orgId" element={<EventDetails />} />
+        <Route path="/:orgId/create" element={<CreateEvent />} />
+        <Route path="/:orgId/edit/:eventId" element={<EditEvent />} />
         <Route path="/show-qr" element={<ShowQR />} />
         {/* User registration and ticket routes */}
         <Route
-          path="/user-register/:eventId"
+          path="/:orgId/:eventId/register-user"
           element={<UserRegistration />}
-        />{" "}
+        />
         {/* Dynamic event route */}
         <Route path="/ticket/:userId" element={<TicketPage />} />{" "}
         {/* Ticket page route */}

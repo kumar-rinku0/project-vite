@@ -51,13 +51,14 @@ function UserForm() {
         otp: otp,
       });
 
-      if (response.data.success) {
+      if (response.data.success && response.data.orgId) {
+        const orgId = response.data.orgId;
         toast.success(response.data.message, {
           position: "top-right",
         });
-        navigate("/event");
+        navigate(`/:${orgId}`);
       } else {
-        toast.error("Invalid OTP. Please try again.", {
+        toast.error("Invalid OTP. Please try again!", {
           position: "top-right",
         });
       }

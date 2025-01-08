@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 var url = "api";
 
 const EditEvent = () => {
-  const { id } = useParams();
+  const { orgId, eventId } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState({
     name: "",
@@ -21,7 +21,7 @@ const EditEvent = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await axios.get(url + `/events/${id}`);
+        const response = await axios.get(url + `/{orgId}/edit/${eventId}`);
         setEvent(response.data);
       } catch (err) {
         setError("Failed to fetch event details");
@@ -32,7 +32,7 @@ const EditEvent = () => {
     };
 
     fetchEvent();
-  }, [id]);
+  }, [orgId, envetId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,11 +43,11 @@ const EditEvent = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axios.put(url + `/events/${id}`, event);
+      await axios.put(url + `/${orgId}/edit/${eventId}`, event);
       toast.success("Event updated successfully!", {
         position: "top-right",
       });
-      navigate(`/event-details/${id}`);
+      navigate(`/${orgId}`);
     } catch (err) {
       toast.error("Failed to update event", {
         position: "top-right",
@@ -149,7 +149,7 @@ const EditEvent = () => {
             <button
               type="button"
               className="event-form-button event-form-cancel"
-              onClick={() => navigate("/event")}
+              onClick={() => navigate("/${orgId}")}
             >
               Cancel
             </button>
