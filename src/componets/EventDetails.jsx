@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
-import { FaEdit, FaPaperPlane } from "react-icons/fa"; // Import FontAwesome icons
+import { FaEdit, FaPaperPlane , FaTrashAlt} from "react-icons/fa"; // Import FontAwesome icons
 
 const url = "/api";
 
@@ -69,6 +69,20 @@ export const EventDetails = () => {
     );
   };
 
+   // DELETE function to remove event from both backend and frontend
+   const handleDeleteClick = async (eventId) => {
+    try {
+      
+      await axios.delete(`${url}/${orgId}/delete/${eventId}`);
+
+      // Remove the deleted event from the eventData and filteredData state
+      setEventData(eventData.filter((event) => event._id !== eventId));
+      setFilteredData(filteredData.filter((event) => event._id !== eventId));
+    } catch (err) {
+      setError("Failed to delete event");
+    }
+  };
+
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -125,6 +139,13 @@ export const EventDetails = () => {
                   onClick={() => handleEditClick(event)}
                 >
                   <FaEdit /> {/* Edit Icon */}
+                </button>
+
+                <button
+                  className="icon-button"
+                  onClick={() => handleDeleteClick(event._id)}
+                >
+                  <FaTrashAlt />
                 </button>
                 <button
                   className="icon-button"
