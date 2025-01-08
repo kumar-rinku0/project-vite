@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
-import { FaEdit, FaPaperPlane , FaTrashAlt} from "react-icons/fa"; // Import FontAwesome icons
+import { FaEdit, FaPaperPlane, FaUpload, FaTrashAlt} from "react-icons/fa"; // Import FontAwesome icons
 
 const url = "/api";
 
@@ -89,6 +89,35 @@ export const EventDetails = () => {
     }
   };
 
+    
+  const handleFileUpload = async () => {
+    if (!file) {
+      alert("Please select a file before uploading.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(
+        `${url}/upload-users/${selectedEventId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      alert("Users uploaded successfully.");
+      setFile(null);
+    } catch (err) {
+      console.error("Error uploading file:", err);
+      alert("Failed to upload users.");
+    }
+  };
+
+
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const indexOfLastEvent = currentPage * itemsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - itemsPerPage;
@@ -169,9 +198,15 @@ export const EventDetails = () => {
       {selectedEventId && (
         <div className="users-list">
           <h3>Registered Users for Event</h3>
+          <input type="file" onChange={handleFileChange} />
+          <button onClick={handleFileUpload} className="upload-button">
+            <FaUpload /> Upload Users
+          </button>
           <UserDetails eventId={selectedEventId} />
         </div>
       )}
+
+
 
       <div className="pagination">
         <button
