@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -21,10 +21,11 @@ const EditEvent = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await axios.get(url + `/{orgId}/edit/${eventId}`);
+        const response = await axios.get(url + `/${orgId}/edit/${eventId}`);
         setEvent(response.data);
       } catch (err) {
         setError("Failed to fetch event details");
+        console.log(err);
         toast.error("Failed to fetch event details", {
           position: "top-right",
         });
@@ -32,7 +33,7 @@ const EditEvent = () => {
     };
 
     fetchEvent();
-  }, [orgId, envetId]);
+  }, [orgId, eventId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -49,6 +50,7 @@ const EditEvent = () => {
       });
       navigate(`/${orgId}`);
     } catch (err) {
+      console.log(err);
       toast.error("Failed to update event", {
         position: "top-right",
       });

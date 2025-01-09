@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
 import { FaEdit, FaPaperPlane, FaUpload, FaTrashAlt} from "react-icons/fa"; // Import FontAwesome icons
@@ -11,6 +11,7 @@ export const EventDetails = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedEventId, setSelectedEventId] = useState(null); // State to track selected event
@@ -25,7 +26,7 @@ export const EventDetails = () => {
         setEventData(response.data);
         setFilteredData(response.data);
       } catch (err) {
-        setError("Failed to load event details");
+        setError("Failed to load event details", err);
       } finally {
         setIsLoading(false);
       }
@@ -50,10 +51,9 @@ export const EventDetails = () => {
     }
   };
 
-  const handleSubmitClick = (event) => {
+  const handleSubmitClicktoGetQr = () => {
     // Generate QR code data with event registration URL
-    const eventId = event._id;
-    // const qrData = `${window.location.origin}/${orgId}/${eventId}/register-user`;
+    // const eventId = event._id;
     const qrData = `${window.location.origin}/qrcodepage`;
     navigate("/show-qr", { state: { qrCodeData: qrData } });
   };
@@ -79,7 +79,7 @@ export const EventDetails = () => {
       setEventData(eventData.filter((event) => event._id !== eventId));
       setFilteredData(filteredData.filter((event) => event._id !== eventId));
     } catch (err) {
-      setError("Failed to delete event");
+      setError("Failed to delete event", err);
     }
   };
 
@@ -88,6 +88,10 @@ export const EventDetails = () => {
       setCurrentPage(pageNumber);
     }
   };
+
+  const handleFileChange = (event) => {
+    setFile(event.target.file[0]);
+  }
 
     
   const handleFileUpload = async () => {
@@ -111,6 +115,7 @@ export const EventDetails = () => {
       );
       alert("Users uploaded successfully.");
       setFile(null);
+      console.log(response);
     } catch (err) {
       console.error("Error uploading file:", err);
       alert("Failed to upload users.");
@@ -178,7 +183,7 @@ export const EventDetails = () => {
                 </button>
                 <button
                   className="icon-button"
-                  onClick={() => handleSubmitClick(event)}
+                  onClick={() => handleSubmitClicktoGetQr(event)}
                 >
                   <FaPaperPlane /> {/* Submit Icon */}
                 </button>
@@ -242,6 +247,7 @@ export const EventDetails = () => {
 };
 
 // UserDetails Component to show registered users
+// eslint-disable-next-line react/prop-types
 const UserDetails = ({ eventId }) => {
   const [users, setUsers] = useState([]);
 

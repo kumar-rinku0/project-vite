@@ -1,4 +1,3 @@
-import React from "react";
 import { FaCalendar, FaLocationPin, FaMessage, FaShare } from "react-icons/fa6";
 
 const image = {
