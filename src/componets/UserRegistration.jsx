@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
 
@@ -45,6 +45,7 @@ const UserRegistration = () => {
       setOtpSent(true);
       setErrorMessage("");
     } catch (error) {
+      console.log("UserReg", error);
       setMessage("");
       setErrorMessage("Error sending OTP");
     }
@@ -66,6 +67,7 @@ const UserRegistration = () => {
     } catch (error) {
       setMessage("");
       setErrorMessage("Invalid or expired OTP");
+      console.log(error);
     }
   };
 
@@ -91,6 +93,7 @@ const UserRegistration = () => {
     } catch (error) {
       setMessage("");
       setErrorMessage("Error registering user");
+      console.log(error);
     }
   };
 

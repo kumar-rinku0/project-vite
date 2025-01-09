@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
@@ -40,6 +40,18 @@ export const CreateEvent = () => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   };
+
+  const handleSubmit = () => {
+    setIsLoading(true);
+    axios.post(url+`/${orgId}/create`, values).then((res) => {
+      console.log(res);
+      navigate(`/${orgId}`);
+    }).then((err) => {
+      console.log(err);
+    }).finally(() => {
+      setIsLoading(false);
+    })
+  }
 
 
   return (
