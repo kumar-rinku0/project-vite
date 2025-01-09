@@ -3,7 +3,7 @@ import "./componets/oldstyle.css";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router";
 import UserForm from "./componets/UserForm";
-import { Event } from "./componets/CreateEvent";
+import { CreateEvent } from "./componets/CreateEvent";
 import { EventDetails } from "./componets/EventDetails";
 import EditEvent from "./componets/EditEvent";
 import ShowQR from "./componets/ShowQR";
