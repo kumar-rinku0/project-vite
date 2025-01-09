@@ -12,9 +12,20 @@ function UserForm() {
 
   const [step, setStep] = useState(1);
   const [otp, setOtp] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  var url = "/api";
+  const url = "/api";
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    return emailRegex.test(email);
+  };
+
+  const validateMobileNumber = (number) => {
+    const mobileRegex = /^[0-9]{10}$/;
+    return mobileRegex.test(number);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,8 +38,24 @@ function UserForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!validateEmail(formData.email)) {
+      toast.error("Invalid email address.", {
+        position: "top-right",
+      });
+      return;
+    }
+
+    if (!validateMobileNumber(formData.mobileNumber)) {
+      toast.error("Invalid mobile number. It should be 10 digits.", {
+        position: "top-right",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-      const response = await axios.post(url + "/send-otp", {
+      const response = await axios.post(`${url}/send-otp`, {
         email: formData.email,
       });
 
@@ -41,12 +68,16 @@ function UserForm() {
       toast.error("Failed to send OTP", {
         position: "top-right",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleValidateOTP = async () => {
+    setIsSubmitting(true);
+
     try {
-      const response = await axios.post(url + "/validate-otp", {
+      const response = await axios.post(`${url}/validate-otp`, {
         email: formData.email,
         otp: otp,
       });
@@ -67,6 +98,8 @@ function UserForm() {
       toast.error("Error validating OTP", {
         position: "top-right",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -74,7 +107,7 @@ function UserForm() {
     <div className="user-form-container">
       <ToastContainer />
       <div className="user-form-card">
-        <h2 className="user-form-title">organization Form</h2>
+        <h2 className="user-form-title">Organization Form</h2>
 
         {step === 1 && (
           <form onSubmit={handleSubmit}>
@@ -98,8 +131,12 @@ function UserForm() {
               required
             />
 
-            <button type="submit" className="user-form-button">
-              Submit
+            <button
+              type="submit"
+              className="user-form-button"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
           </form>
         )}
@@ -118,8 +155,9 @@ function UserForm() {
               type="button"
               className="user-form-button"
               onClick={handleValidateOTP}
+              disabled={isSubmitting}
             >
-              Validate OTP
+              {isSubmitting ? "Validating..." : "Validate OTP"}
             </button>
           </div>
         )}
