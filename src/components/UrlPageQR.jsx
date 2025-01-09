@@ -1,4 +1,9 @@
 import { FaCalendar, FaLocationPin, FaMessage, FaShare } from "react-icons/fa6";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "./components/ui/popover";
 
 const image = {
   url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5KchjSSqPloa4eQ2VL9BG7D2QGJ0thHj_pA&s",
@@ -18,6 +23,7 @@ const content = {
   },
 };
 const UrlPageQR = () => {
+  // const [popover, setPopover] = useState(false);
   return (
     <div className="w-full min-h-[100vh] flex justify-center items-center">
       <div className="w-96 h-full flex flex-col justify-center items-start gap-4 px-2">
@@ -34,7 +40,7 @@ const UrlPageQR = () => {
           <h2 className="text-lg">{content.heading}</h2>
           <p className="text-gray-500">{content.description}</p>
           <button
-            className="px-4 py-2 border border-gray-200 rounded-md hover:bg-slate-200"
+            className="px-4 py-2 border border-gray-200 rounded-md hover:bg-slate-200 shadow-md"
             type="button"
           >
             get tickets!
@@ -88,28 +94,46 @@ const UrlPageQR = () => {
             </div>
           </div>
         </div>
-        <div className="fixed bottom-4 right-4 w-16 h-16 sm:static sm:w-96 p-4 flex justify-center items-center">
-          <button
-            type="button"
-            className="w-full p-2 flex justify-center items-center gap-4 bg-slate-200 rounded-full sm:rounded-md"
-          >
-            <FaShare />
-            <span className="hidden sm:flex uppercase sm:text-sm">
-              shere event
-            </span>
-          </button>
-        </div>
-        <div className="fixed bottom-20 right-4 w-16 h-16 sm:static sm:w-96 p-4 flex justify-center items-center">
-          <button
-            type="button"
-            className="p-2 w-full flex justify-center items-center gap-4 bg-red-200 rounded-full sm:rounded-md"
-          >
-            <FaCalendar />
-            <span className="hidden sm:flex uppercase sm:text-sm">
-              add event to calender
-            </span>
-          </button>
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <div className="fixed bottom-8 right-4 w-16 h-16 sm:static sm:w-96 rounded-full p-1 flex justify-center items-center ">
+              <button
+                type="button"
+                className="w-full h-full p-2 flex justify-center items-center gap-4 bg-red-200 rounded-full shadow-lg sm:rounded-md"
+              >
+                <FaShare />
+                <span className="hidden sm:flex uppercase sm:text-sm">
+                  shere event
+                </span>
+              </button>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="w-80">
+            <div>
+              <div>Copy Link!</div>
+              <div>Open in Chrome!</div>
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <div className="fixed bottom-24 right-4 w-16 h-16 sm:static sm:w-96 p-1 flex justify-center items-center">
+              <button
+                type="button"
+                className="p-2 w-full h-full flex justify-center items-center gap-4 rounded-full bg-slate-200 shadow-lg sm:rounded-md"
+              >
+                <FaCalendar />
+                <span className="hidden sm:flex uppercase sm:text-sm">
+                  add event to calender
+                </span>
+              </button>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="w-80">
+            Event Added to Your Calender!
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
