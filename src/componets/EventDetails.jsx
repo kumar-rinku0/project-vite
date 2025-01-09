@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
-import { FaEdit, FaPaperPlane, FaUpload, FaTrashAlt} from "react-icons/fa"; // Import FontAwesome icons
-
-const url = "/api";
+import { FaEdit, FaPaperPlane, FaUpload, FaTrashAlt } from "react-icons/fa"; // Import FontAwesome icons
 
 export const EventDetails = () => {
   const { orgId } = useParams();
@@ -22,7 +20,9 @@ export const EventDetails = () => {
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const response = await axios.get(`${url}/${orgId}`);
+        const response = await axios.get(
+          `/api/event-user-mapping/user/${orgId}/userGroup/ORGANISER/events`
+        );
         setEventData(response.data);
         setFilteredData(response.data);
       } catch (err) {
@@ -69,11 +69,10 @@ export const EventDetails = () => {
     );
   };
 
-   // DELETE function to remove event from both backend and frontend
-   const handleDeleteClick = async (eventId) => {
+  // DELETE function to remove event from both backend and frontend
+  const handleDeleteClick = async (eventId) => {
     try {
-      
-      await axios.delete(`${url}/${orgId}/delete/${eventId}`);
+      await axios.delete(`/api/${orgId}/delete/${eventId}`);
 
       // Remove the deleted event from the eventData and filteredData state
       setEventData(eventData.filter((event) => event._id !== eventId));
@@ -91,9 +90,8 @@ export const EventDetails = () => {
 
   const handleFileChange = (event) => {
     setFile(event.target.file[0]);
-  }
+  };
 
-    
   const handleFileUpload = async () => {
     if (!file) {
       alert("Please select a file before uploading.");
@@ -105,7 +103,7 @@ export const EventDetails = () => {
 
     try {
       const response = await axios.post(
-        `${url}/upload-users/${selectedEventId}`,
+        `/api/upload-users/${selectedEventId}`,
         formData,
         {
           headers: {
@@ -121,7 +119,6 @@ export const EventDetails = () => {
       alert("Failed to upload users.");
     }
   };
-
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const indexOfLastEvent = currentPage * itemsPerPage;
@@ -211,8 +208,6 @@ export const EventDetails = () => {
         </div>
       )}
 
-
-
       <div className="pagination">
         <button
           className="page-button"
@@ -253,7 +248,9 @@ const UserDetails = ({ eventId }) => {
 
   useEffect(() => {
     axios
-      .get(`/api/${eventId}`)
+      .get(
+        `/api/event-user-mapping/event/${eventId}/userGroup/PARTICIPANT/users`
+      )
       .then((response) => setUsers(response.data.users))
       .catch((error) => console.error("Error fetching users:", error));
   }, [eventId]);

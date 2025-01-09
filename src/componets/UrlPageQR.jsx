@@ -19,7 +19,7 @@ const content = {
 };
 const UrlPageQR = () => {
   return (
-    <div className="w-full h-[100vh] flex justify-center items-center">
+    <div className="w-full min-h-[100vh] flex justify-center items-center">
       <div className="w-96 h-full flex flex-col justify-center items-start gap-4 px-2">
         <div className="w-full flex flex-col items-center justify-center">
           <div className="w-full h-full flex justify-center items-center py-4">
@@ -46,12 +46,14 @@ const UrlPageQR = () => {
             <FaCalendar />
             <span className="text-gray-500">When</span>
           </div>
-          <div>{content.time.toLocaleDateString("en-IN", {
-            weekday: 'short',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}</div>
+          <div>
+            {content.time.toLocaleDateString("en-IN", {
+              weekday: "short",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </div>
         </div>
         <hr className="border border-gray-200 w-full" />
         <div className="px-2">
@@ -86,14 +88,26 @@ const UrlPageQR = () => {
             </div>
           </div>
         </div>
-        <div className="fixed bottom-1 right-4 w-16 h-16 sm:relative sm:left-0 flex justify-center items-center">
-          <button type="button" className="p-2 bg-slate-200 rounded-full">
+        <div className="fixed bottom-4 right-4 w-16 h-16 sm:static sm:w-96 p-4 flex justify-center items-center">
+          <button
+            type="button"
+            className="w-full p-2 flex justify-center items-center gap-4 bg-slate-200 rounded-full sm:rounded-md"
+          >
             <FaShare />
+            <span className="hidden sm:flex uppercase sm:text-sm">
+              shere event
+            </span>
           </button>
         </div>
-        <div className="fixed bottom-16 right-4 w-16 h-16 sm:relative sm:left-16 flex justify-center items-center">
-          <button type="button" className="p-2 bg-red-200 rounded-full">
+        <div className="fixed bottom-20 right-4 w-16 h-16 sm:static sm:w-96 p-4 flex justify-center items-center">
+          <button
+            type="button"
+            className="p-2 w-full flex justify-center items-center gap-4 bg-red-200 rounded-full sm:rounded-md"
+          >
             <FaCalendar />
+            <span className="hidden sm:flex uppercase sm:text-sm">
+              add event to calender
+            </span>
           </button>
         </div>
       </div>
