@@ -1,15 +1,15 @@
 
-import "./components/oldstyle.css";
+import "./componets/oldstyle.css";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router";
-import UserForm from "./components/UserForm";
-import { CreateEvent } from "./components/CreateEvent";
-import { EventDetails } from "./components/EventDetails";
-import EditEvent from "./components/EditEvent";
-import ShowQR from "./components/ShowQR";
-import UserRegistration from "./components/UserRegistration"; // Import UserRegistration
-import TicketPage from "./components/TicketPage"; // Import TicketPage
-import UrlPageQR from "./components/UrlPageQR";
+import UserLogin from "./componets/UserLogin";
+import UserRegister from "./componets/UserRegister"
+import { CreateEvent } from "./componets/CreateEvent";
+import { EventDetails } from "./componets/EventDetails";
+import EditEvent from "./componets/EditEvent";
+import ShowQR from "./componets/ShowQR";
+import TicketPage from "./componets/TicketPage"; // Import TicketPage
+import UrlPageQR from "./componets/UrlPageQR";
 
 // app
 function App() {
@@ -17,7 +17,8 @@ function App() {
     <Router>
       <Routes>
         {/* Other routes */}
-        <Route path="/" element={<UserForm />} />
+        <Route path="/login" element={<UserLogin />} />
+        <Route path="/register" element={<UserRegister />} />
         <Route path="/qrcodepage" element={<UrlPageQR />} />
         {/* these 4 routes has to protect! */}
         <Route path="/:orgId" element={<EventDetails />} />
@@ -27,7 +28,7 @@ function App() {
         {/* User registration and ticket routes */}
         <Route
           path="/:orgId/:eventId/register-user"
-          element={<UserRegistration />}
+          element={<UserRegister />}
         />
         {/* Dynamic event route */}
         <Route path="/ticket/:userId" element={<TicketPage />} />{" "}

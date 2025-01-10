@@ -4,7 +4,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function UserForm() {
+function UserLogin() {
   const [formData, setFormData] = useState({
     email: "",
     mobileNumber: "",
@@ -18,7 +18,6 @@ function UserForm() {
   const url = "/api";
 
   const validateEmail = (email) => {
-    // eslint-disable-next-line
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     return emailRegex.test(email);
   };
@@ -167,4 +166,4 @@ function UserForm() {
   );
 }
 
-export default UserForm;
+export default UserLogin;
