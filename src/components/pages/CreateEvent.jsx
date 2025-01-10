@@ -99,11 +99,11 @@ const CreateEvent = () => {
         </form>
       </div>
       <div className="relative max-h-[60vh]">
-        <h2 className="text-xl">Preview!</h2>
+        <h2 className="text-center uppercase">screen preview</h2>
         <Iframe
           url="http://localhost:5173/qrcodepage"
           width="320px"
-          height="640px"
+          height="440px"
         />
       </div>
     </div>
