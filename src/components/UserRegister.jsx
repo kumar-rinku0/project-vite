@@ -20,6 +20,7 @@ function UserRegister() {
   const url = "/api";
 
   const validateEmail = (email) => {
+    // eslint-disable-next-line no-useless-escape
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     return emailRegex.test(email);
   };
@@ -38,7 +39,11 @@ function UserRegister() {
     const { name, value } = e.target;
 
     // Apply validation for firstname and lastname
-    if ((name === "firstname" || name === "lastname") && !validateName(value) && value !== "") {
+    if (
+      (name === "firstname" || name === "lastname") &&
+      !validateName(value) &&
+      value !== ""
+    ) {
       toast.error("Only alphabetic characters are allowed for names.", {
         position: "top-right",
       });

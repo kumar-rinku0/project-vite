@@ -3,7 +3,7 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "./components/ui/popover";
+} from "../components/ui/popover";
 
 const image = {
   url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5KchjSSqPloa4eQ2VL9BG7D2QGJ0thHj_pA&s",
@@ -25,7 +25,7 @@ const content = {
 const UrlPageQR = () => {
   // const [popover, setPopover] = useState(false);
   return (
-    <div className="w-full min-h-[100vh] flex justify-center items-center">
+    <div className="w-full min-h-[100vh] flex sm:justify-center items-center">
       <div className="w-96 h-full flex flex-col justify-center items-start gap-4 px-2">
         <div className="w-full flex flex-col items-center justify-center">
           <div className="w-full h-full flex justify-center items-center py-4">

@@ -15,9 +15,8 @@ function UserLogin() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const url = "/api";
-
   const validateEmail = (email) => {
+    // eslint-disable-next-line no-useless-escape
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     return emailRegex.test(email);
   };
@@ -55,7 +54,7 @@ function UserLogin() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${url}/send-otp`, {
+      const response = await axios.post(`/api/send-otp`, {
         email: formData.email,
       });
 
@@ -77,7 +76,7 @@ function UserLogin() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${url}/validate-otp`, {
+      const response = await axios.post(`/api/validate-otp`, {
         email: formData.email,
         otp: otp,
       });

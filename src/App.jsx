@@ -1,15 +1,14 @@
-
-import "./componets/oldstyle.css";
+import "./components/oldstyle.css";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router";
-import UserLogin from "./componets/UserLogin";
-import UserRegister from "./componets/UserRegister"
-import { CreateEvent } from "./componets/CreateEvent";
-import { EventDetails } from "./componets/EventDetails";
-import EditEvent from "./componets/EditEvent";
-import ShowQR from "./componets/ShowQR";
-import TicketPage from "./componets/TicketPage"; // Import TicketPage
-import UrlPageQR from "./componets/UrlPageQR";
+import UserLogin from "./components/UserLogin";
+import UserRegister from "./components/UserRegister";
+import CreateEvent from "./components/pages/CreateEvent";
+import EventDetails from "./components/EventDetails";
+import EditEvent from "./components/EditEvent";
+import ShowQR from "./components/ShowQR";
+import TicketPage from "./components/TicketPage"; // Import TicketPage
+import UrlPageQR from "./components/pages/UrlPageQR";
 
 // app
 function App() {

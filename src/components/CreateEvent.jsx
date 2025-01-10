@@ -4,8 +4,6 @@ import { useNavigate, useParams } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const url = "/api"; // API base URL
-
 export const CreateEvent = () => {
   const { orgId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +21,7 @@ export const CreateEvent = () => {
     if (orgId) {
       const fetchEventDetails = async () => {
         try {
-          const response = await axios.get(`${url}/${orgId}`);
+          const response = await axios.get(`/api/${orgId}`);
           setValues(response.data);
         } catch (err) {
           console.error("Error fetching event details:", err);
@@ -43,16 +41,19 @@ export const CreateEvent = () => {
 
   const handleSubmit = () => {
     setIsLoading(true);
-    axios.post(url+`/${orgId}/create`, values).then((res) => {
-      console.log(res);
-      navigate(`/${orgId}`);
-    }).then((err) => {
-      console.log(err);
-    }).finally(() => {
-      setIsLoading(false);
-    })
-  }
-
+    axios
+      .post(`/api/${orgId}/create`, values)
+      .then((res) => {
+        console.log(res);
+        navigate(`/${orgId}`);
+      })
+      .then((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   return (
     <div className="event-form-container">

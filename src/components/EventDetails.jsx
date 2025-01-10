@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router";
 import { FaEdit, FaPaperPlane, FaUpload, FaTrashAlt } from "react-icons/fa"; // Import FontAwesome icons
 
-export const EventDetails = () => {
+const EventDetails = () => {
   const { orgId } = useParams();
   const [eventData, setEventData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -268,3 +268,5 @@ const UserDetails = ({ eventId }) => {
     </div>
   );
 };
+
+export default EventDetails;
