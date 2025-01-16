@@ -231,7 +231,7 @@ body {
   overflow: hidden;
   background-color: #f8f9fa;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 15px;
+  /* margin-top: 10px; */
 }
 
 /* Styling for the search icon */
@@ -253,6 +253,7 @@ body {
   color: #495057;
   border-radius: 25px;
   box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+  margin-top: 10px;
 }
 
 /* Placeholder text styling */
@@ -375,3 +376,26 @@ body {
     padding: 8px;
   }
 }
+
+.create-event-button-container {
+  margin-bottom: 20px;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.create-event-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.create-event-button:hover {
+  background-color: #45a049;
+}
+

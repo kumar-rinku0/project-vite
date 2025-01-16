@@ -5,20 +5,16 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function UserRegister() {
-  const [formData, setFormData] = useState({
-    firstname: "",
-    lastname: "",
-    email: "",
-    mobileNumber: "",
-  });
+  const [formData, setFormData] = useState({});
 
   const [step, setStep] = useState(1);
-  const [otp, setOtp] = useState("");
+  // const [otp, setOtp] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
 
   const validateEmail = (email) => {
+    // eslint-disable-next-line no-useless-escape
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     return emailRegex.test(email.trim());
   };
@@ -35,7 +31,7 @@ function UserRegister() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+    setFormData((prevFormData) => ({...prevFormData, [name]: value}));
     if (
       (name === "firstname" || name === "lastname") &&
       !validateName(value) &&
@@ -75,9 +71,10 @@ function UserRegister() {
     try {
       const response = await axios.post(`/api/v1/send-otp`, {
         email: formData.email.trim(),
+        phone: formData.mobileNumber.trim(),
       });
       console.log(response.data);
-      toast.success(response.data.message, {
+      toast.success(response.data.status, {
         position: "top-right",
       });
       setStep(2);
@@ -100,7 +97,8 @@ function UserRegister() {
     try {
       const response = await axios.post(`/api/v1/validate-otp`, {
         email: formData.email.trim(),
-        otp: otp.trim(),
+        phone: formData.mobileNumber.trim(),
+        otp: formData.otp.trim(),
       });
       console.log(response.data);
       if (response.data.status && response.data.data) {
@@ -140,7 +138,7 @@ function UserRegister() {
               name="firstname"
               placeholder="Enter your first name"
               className="user-form-input"
-              value={formData.firstname}
+              value={formData.firstname || ""}
               onChange={handleChange}
               required
             />
@@ -150,7 +148,7 @@ function UserRegister() {
               name="lastname"
               placeholder="Enter your last name"
               className="user-form-input"
-              value={formData.lastname}
+              value={formData.lastname || ""}
               onChange={handleChange}
               required
             />
@@ -160,7 +158,7 @@ function UserRegister() {
               name="email"
               placeholder="Enter your email"
               className="user-form-input"
-              value={formData.email}
+              value={formData.email || ""}
               onChange={handleChange}
               required
             />
@@ -170,7 +168,7 @@ function UserRegister() {
               name="mobileNumber"
               placeholder="Enter your mobile number"
               className="user-form-input"
-              value={formData.mobileNumber}
+              value={formData.mobileNumber || ""}
               onChange={handleChange}
               required
             />
@@ -191,8 +189,9 @@ function UserRegister() {
               type="text"
               placeholder="Enter OTP"
               className="user-form-otp-input"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              name="otp"
+              value={formData.otp }
+              onChange={handleChange}
               required
             />
             <button
