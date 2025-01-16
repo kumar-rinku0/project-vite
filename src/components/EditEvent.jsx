@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 const EditEvent = () => {
   const { orgId, eventId } = useParams();
   const navigate = useNavigate();
-  const [event, setEvent] = useState({});
+  const [event, setEvent] = useState({}); 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 

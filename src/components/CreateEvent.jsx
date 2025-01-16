@@ -52,6 +52,7 @@ const CreateEvent = () => {
     axios
       .post(`/api/v1/events/${orgId}`, formattedValues)
       .then((res) => {
+        console.log(res.data);
         toast.success("Event created successfully!");
         navigate(`/${orgId}`);
       })

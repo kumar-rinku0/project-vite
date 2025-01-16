@@ -5,15 +5,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function UserLogin() {
-  const [formData, setFormData] = useState({
-    email: "",
-    mobileNumber: "",
-  });
-
+  const [formData, setFormData] = useState({});
   const [step, setStep] = useState(1);
-  const [otp, setOtp] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
 
   const validateEmail = (email) => {
     // eslint-disable-next-line no-useless-escape
@@ -28,10 +24,10 @@ function UserLogin() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    if (name == "otp") {
+      console.log(name, value);
+    }
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -44,7 +40,7 @@ function UserLogin() {
       return;
     }
 
-    if (!validateMobileNumber(formData.mobileNumber)) {
+    if (!validateMobileNumber(formData.phone)) {
       toast.error("Invalid mobile number. It should be 10 digits.", {
         position: "top-right",
       });
@@ -56,6 +52,7 @@ function UserLogin() {
     try {
       const response = await axios.post(`/api/v1/send-otp`, {
         email: formData.email,
+        phone: formData.phone,
       });
       console.log(response.data);
       toast.success(response.data.status, {
@@ -72,13 +69,17 @@ function UserLogin() {
     }
   };
 
-  const handleValidateOTP = async () => {
+  const handleValidateOTP = async (e) => {
     setIsSubmitting(true);
-
+    const { name, value } = e.target;
+    if (name == "otp") {
+      console.log(name, value);
+    }
     try {
       const response = await axios.post(`/api/v1/validate-otp`, {
-        email: formData.email,
-        otp: otp,
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        otp: formData.otp,
       });
 
       if (response.data.status && response.data.data.id) {
@@ -115,17 +116,17 @@ function UserLogin() {
               name="email"
               placeholder="Enter your email"
               className="user-form-input"
-              value={formData.email}
+              value={formData.email || ""}
               onChange={handleChange}
               required
             />
 
             <input
-              type="text"
-              name="mobileNumber"
+              type="number"
+              name="phone"
               placeholder="Enter your mobile number"
               className="user-form-input"
-              value={formData.mobileNumber}
+              value={formData.phone || ""}
               onChange={handleChange}
               required
             />
@@ -146,10 +147,12 @@ function UserLogin() {
               type="text"
               placeholder="Enter OTP"
               className="user-form-otp-input"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              name="otp"
+              value={formData.otp}
+              onChange={handleChange}
               required
             />
+
             <button
               type="button"
               className="user-form-button"

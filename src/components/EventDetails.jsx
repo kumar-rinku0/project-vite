@@ -72,12 +72,12 @@ const EventDetails = () => {
     );
   };
 
-  // DELETE function to remove event from both backend and frontend
+ 
   const handleDeleteClick = async (eventId) => {
     try {
       const res = await axios.delete(`/api/v1/events/${eventId}`);
       console.log(res.data);
-      // Remove the deleted event from the eventData and filteredData state
+     
       setEventData(eventData.filter((event) => event.id !== eventId));
       setFilteredData(filteredData.filter((event) => event.id !== eventId));
     } catch (err) {
@@ -125,6 +125,10 @@ const EventDetails = () => {
     }
   };
 
+  const handleCreateEventClick = () => {
+    navigate(`/${orgId}/create`);  
+  };
+
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const indexOfLastEvent = currentPage * itemsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - itemsPerPage;
@@ -134,7 +138,10 @@ const EventDetails = () => {
   if (error) return <p className="error-text">{error}</p>;
 
   return (
+
+    
     <div className="event-details-container">
+      
       <input
         className="search-bar"
         type="text"
@@ -142,6 +149,12 @@ const EventDetails = () => {
         value={searchQuery}
         onChange={handleSearchChange}
       />
+
+<div className="create-event-button-container">
+     <button className="create-event-button" onClick={handleCreateEventClick}>
+       Create Event
+     </button>
+   </div>
       <table className="event-table">
         <thead>
           <tr>
