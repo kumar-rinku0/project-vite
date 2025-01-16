@@ -21,12 +21,14 @@ const EventDetails = () => {
     const fetchEventDetails = async () => {
       try {
         const response = await axios.get(
-          `/api/event-user-mapping/user/${orgId}/userGroup/ORGANISER/events`
+          `/api/v1/eventmapping/user/${orgId}`
         );
-        setEventData(response.data);
-        setFilteredData(response.data);
+        console.log(response.data);
+        setEventData(response.data.data);
+        setFilteredData(response.data.data);
       } catch (err) {
         setError("Failed to load event details", err);
+        console.log(err);
       } finally {
         setIsLoading(false);
       }
@@ -59,7 +61,8 @@ const EventDetails = () => {
   };
 
   const handleEditClick = (event) => {
-    const eventId = event._id;
+    const eventId = event.id;
+    console.log(event);
     navigate(`/${orgId}/edit/${eventId}`);
   };
 
@@ -72,13 +75,15 @@ const EventDetails = () => {
   // DELETE function to remove event from both backend and frontend
   const handleDeleteClick = async (eventId) => {
     try {
-      await axios.delete(`/api/${orgId}/delete/${eventId}`);
-
+      const res = await axios.delete(`/api/v1/events/${eventId}`);
+      console.log(res.data);
       // Remove the deleted event from the eventData and filteredData state
-      setEventData(eventData.filter((event) => event._id !== eventId));
-      setFilteredData(filteredData.filter((event) => event._id !== eventId));
+      setEventData(eventData.filter((event) => event.id !== eventId));
+      setFilteredData(filteredData.filter((event) => event.id !== eventId));
     } catch (err) {
-      setError("Failed to delete event", err);
+      setError("Failed to delete event");
+      console.log(err);
+
     }
   };
 
@@ -151,17 +156,17 @@ const EventDetails = () => {
         </thead>
         <tbody>
           {currentEvents.map((event, index) => (
-            <tr key={event._id} className="table-row">
+            <tr key={event.id} className="table-row">
               <td className="table-cell">
                 {index + 1 + (currentPage - 1) * itemsPerPage}
               </td>
-              <td className="table-cell">{event.name}</td>
+              <td className="table-cell">{event.eventName}</td>
               <td className="table-cell">{event.venue}</td>
               <td className="table-cell">
-                {new Date(event.startDate).toLocaleDateString()}
+                {new Date(event.startOn).toLocaleDateString()}
               </td>
               <td className="table-cell">
-                {new Date(event.endDate).toLocaleDateString()}
+                {new Date(event.endOn).toLocaleDateString()}
               </td>
               <td className="table-cell">{event.status}</td>
               <td className="table-cell">
@@ -174,9 +179,9 @@ const EventDetails = () => {
 
                 <button
                   className="icon-button"
-                  onClick={() => handleDeleteClick(event._id)}
+                  onClick={() => handleDeleteClick(event.id)}
                 >
-                  <FaTrashAlt />
+                  <FaTrashAlt /> {/*   delete btn */}
                 </button>
                 <button
                   className="icon-button"
@@ -249,7 +254,7 @@ const UserDetails = ({ eventId }) => {
   useEffect(() => {
     axios
       .get(
-        `/api/event-user-mapping/event/${eventId}/userGroup/PARTICIPANT/users`
+        `/api/event-user-mapping/event/${eventId}/user-group/{userGroup}/users`
       )
       .then((response) => setUsers(response.data.users))
       .catch((error) => console.error("Error fetching users:", error));

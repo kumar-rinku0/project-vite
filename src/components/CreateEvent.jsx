@@ -1,54 +1,63 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export const CreateEvent = () => {
+const CreateEvent = () => {
   const { orgId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [values, setValues] = useState({
-    name: "",
+    eventName: "",
+    description: "This is a dummy description!",
     venue: "",
-    startDate: "",
-    endDate: "",
+    startOn: "",
+    endOn: "",
     status: "",
   });
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (orgId) {
-      const fetchEventDetails = async () => {
-        try {
-          const response = await axios.get(`/api/${orgId}`);
-          setValues(response.data);
-        } catch (err) {
-          console.error("Error fetching event details:", err);
-          toast.error("Failed to fetch event details", {
-            position: "top-right",
-          });
-        }
-      };
-      fetchEventDetails();
-    }
-  }, [orgId]);
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  };
 
   const handleChanges = (e) => {
     const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
+    setValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     setIsLoading(true);
+
+    
+    const formattedValues = {
+      ...values,
+      startOn: values.startOn ? formatDateTime(values.startOn) : "",
+      endOn: values.endOn ? formatDateTime(values.endOn) : "",
+      status: values.status.toUpperCase(), 
+    };
+
     axios
-      .post(`/api/${orgId}/create`, values)
+      .post(`/api/v1/events/${orgId}`, formattedValues)
       .then((res) => {
-        console.log(res);
+        toast.success("Event created successfully!");
         navigate(`/${orgId}`);
       })
-      .then((err) => {
-        console.log(err);
+      .catch((err) => {
+        console.error(err.response?.data?.message || "Error creating event");
+        toast.error("Failed to create event. Please try again.");
       })
       .finally(() => {
         setIsLoading(false);
@@ -57,21 +66,18 @@ export const CreateEvent = () => {
 
   return (
     <div className="event-form-container">
-      {/* ToastContainer to display toast notifications */}
       <ToastContainer />
       <div className="event-form-card">
-        <h2 className="event-form-title">
-          {orgId ? "Edit Event" : "Register Event"}
-        </h2>
+        <h2 className="event-form-title">Create New Event!</h2>
         <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor="name">Name:</label>
             <input
               id="name"
-              name="name"
+              name="eventName"
               className="event-form-input"
               placeholder="Enter event name"
-              value={values.name}
+              value={values.eventName}
               onChange={handleChanges}
               required
             />
@@ -91,11 +97,11 @@ export const CreateEvent = () => {
           <div>
             <label htmlFor="startDate">Start Date:</label>
             <input
-              type="date"
+              type="datetime-local"
               id="startDate"
-              name="startDate"
+              name="startOn"
               className="event-form-input"
-              value={values.startDate}
+              value={values.startOn}
               onChange={handleChanges}
               required
             />
@@ -103,11 +109,11 @@ export const CreateEvent = () => {
           <div>
             <label htmlFor="endDate">End Date:</label>
             <input
-              type="date"
+              type="datetime-local"
               id="endDate"
-              name="endDate"
+              name="endOn"
               className="event-form-input"
-              value={values.endDate}
+              value={values.endOn}
               onChange={handleChanges}
               required
             />
@@ -125,10 +131,11 @@ export const CreateEvent = () => {
               <option value="" disabled>
                 Select Status
               </option>
-              <option value="Draft">Draft</option>
-              <option value="Live">Live</option>
-              <option value="End">End</option>
-              <option value="Cancel">Cancel</option>
+              <option value="DRAFT">Draft</option>
+              <option value="LIVE">Live</option>
+              <option value="CANCEL">Cancel</option>
+              <option value="ACTIVE">Active</option>
+              <option value="DEACTIVE">Deactive</option>
             </select>
           </div>
           <div>
@@ -145,3 +152,5 @@ export const CreateEvent = () => {
     </div>
   );
 };
+
+export default CreateEvent;

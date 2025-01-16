@@ -17,28 +17,25 @@ function UserRegister() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const url = "/api";
 
   const validateEmail = (email) => {
-    // eslint-disable-next-line no-useless-escape
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    return emailRegex.test(email);
+    return emailRegex.test(email.trim());
   };
 
   const validateMobileNumber = (number) => {
     const mobileRegex = /^[0-9]{10}$/;
-    return mobileRegex.test(number);
+    return mobileRegex.test(number.trim());
   };
 
   const validateName = (name) => {
     const nameRegex = /^[a-zA-Z]+$/;
-    return nameRegex.test(name);
+    return nameRegex.test(name.trim());
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Apply validation for firstname and lastname
     if (
       (name === "firstname" || name === "lastname") &&
       !validateName(value) &&
@@ -76,19 +73,22 @@ function UserRegister() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${url}/send-otp`, {
-        email: formData.email,
+      const response = await axios.post(`/api/v1/send-otp`, {
+        email: formData.email.trim(),
       });
-
+      console.log(response.data);
       toast.success(response.data.message, {
         position: "top-right",
       });
       setStep(2);
     } catch (error) {
       console.error("Error sending OTP:", error);
-      toast.error("Failed to send OTP", {
-        position: "top-right",
-      });
+      toast.error(
+        error.response?.data?.message || "Failed to send OTP. Please try again.",
+        {
+          position: "top-right",
+        }
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -98,27 +98,30 @@ function UserRegister() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${url}/validate-otp`, {
-        email: formData.email,
-        otp: otp,
+      const response = await axios.post(`/api/v1/validate-otp`, {
+        email: formData.email.trim(),
+        otp: otp.trim(),
       });
-
-      if (response.data.success && response.data.orgId) {
-        const orgId = response.data.orgId;
+      console.log(response.data);
+      if (response.data.status && response.data.data) {
         toast.success(response.data.message, {
           position: "top-right",
         });
-        navigate(`/:${orgId}`);
+        navigate(`/${response.data.data.id}`);
       } else {
-        toast.error("Invalid OTP. Please try again!", {
+        console.log(response.data);
+        toast.error(response.data.message || "Invalid OTP. Please try again.", {
           position: "top-right",
         });
       }
     } catch (error) {
       console.error("Error validating OTP:", error);
-      toast.error("Error validating OTP", {
-        position: "top-right",
-      });
+      toast.error(
+        error.response?.data?.message || "Error validating OTP. Please try again.",
+        {
+          position: "top-right",
+        }
+      );
     } finally {
       setIsSubmitting(false);
     }

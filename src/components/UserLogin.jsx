@@ -54,11 +54,11 @@ function UserLogin() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`/api/send-otp`, {
+      const response = await axios.post(`/api/v1/send-otp`, {
         email: formData.email,
       });
-
-      toast.success(response.data.message, {
+      console.log(response.data);
+      toast.success(response.data.status, {
         position: "top-right",
       });
       setStep(2);
@@ -76,17 +76,17 @@ function UserLogin() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`/api/validate-otp`, {
+      const response = await axios.post(`/api/v1/validate-otp`, {
         email: formData.email,
         otp: otp,
       });
 
-      if (response.data.success && response.data.orgId) {
-        const orgId = response.data.orgId;
+      if (response.data.status && response.data.data.id) {
+        const orgId = response.data.data.id;
         toast.success(response.data.message, {
           position: "top-right",
         });
-        navigate(`/:${orgId}`);
+        navigate(`/${orgId}`);
       } else {
         toast.error("Invalid OTP. Please try again!", {
           position: "top-right",
