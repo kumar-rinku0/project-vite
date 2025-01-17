@@ -10,6 +10,7 @@ import TicketPage from "./components/TicketPage"; // Import TicketPage
 import NoPage from "@components/NoPage";
 import CreateEvent from "./components/pages/CreateEvent";
 import UrlPageQR from "./components/pages/UrlPageQR";
+import Header from "@components/pages/Header";
 
 // app
 function App() {
@@ -17,10 +18,8 @@ function App() {
     <Router>
       <Routes>
         {/* Other routes */}
-        <Route path="/">
-          <Route path="/" index element={<NoPage />} />
-          <Route path="/login" element={<UserLogin />} />
-          <Route path="/register" element={<UserRegister />} />
+        <Route path="/" element={<Header />}>
+          <Route path="/" index element={<UserLogin />} />
           <Route path="/qrcodepage" element={<UrlPageQR />} />
           {/* these 4 routes has to protect! */}
           <Route path="/:orgId" element={<EventDetails />} />

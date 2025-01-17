@@ -1,11 +1,10 @@
 import { FaCalendar, FaLocationPin, FaMessage, FaShare } from "react-icons/fa6";
-import { useContent } from "./ContentProvider";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "../components/ui/popover";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const staticImg = {
   url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5KchjSSqPloa4eQ2VL9BG7D2QGJ0thHj_pA&s",
@@ -26,36 +25,29 @@ const staticContent = {
 };
 const UrlPageQR = () => {
   let params = new URLSearchParams(document.location.search);
-  let preview = params.get("preview");
-  const { content, image } = useContent();
+  const qs = params.get("qs");
+  const [content, setContent] = useState(null);
   useEffect(() => {
-    if (preview) {
-      console.log("preview=", preview);
-      console.log(image, content);
+    if (qs) {
+      console.log("qs=", qs);
+      const objFromQuery = JSON.parse(decodeURIComponent(qs));
+      console.log(objFromQuery);
+      setContent(objFromQuery);
+      console.log(content.imgObj[0]);
     }
-  }, [preview, image, content]);
-  // const [popover, setPopover] = useState(false);
+  }, [qs, content]);
   return (
     <div className="w-full min-h-[100vh] flex sm:justify-center items-center">
       <div className="w-96 h-full flex flex-col justify-center items-start gap-4 px-2">
         <div className="w-full flex flex-col items-center justify-center">
           <div className="w-full h-full flex justify-center items-center py-4">
-            {image &&
-              (typeof image.size === "number" ||
-                image instanceof Blob ||
-                image instanceof File) && (
-                <img
-                  src={URL.createObjectURL(image)}
-                  alt={staticImg.filename}
-                  className="w-full h-full object-cover"
-                />
-              )}
-            {(!image ||
-              !(
-                typeof image.size === "number" ||
-                image instanceof Blob ||
-                image instanceof File
-              )) && (
+            {content?.imgObj ? (
+              <img
+                src={URL.createObjectURL(content?.imgObj[0])}
+                alt={staticImg.filename}
+                className="w-full h-full object-cover"
+              />
+            ) : (
               <img
                 src={staticImg.url}
                 alt={staticImg.filename}
@@ -66,9 +58,13 @@ const UrlPageQR = () => {
         </div>
         <div className="px-2">
           <h2 className="text-lg">
-            {content.eventName || staticContent.heading}
+            {content?.eventName ? content.eventName : staticContent.heading}
           </h2>
-          <p className="text-gray-500">{staticContent.description}</p>
+          <p className="text-gray-500">
+            {content?.description
+              ? content.description
+              : staticContent.description}
+          </p>
           <button
             className="px-4 py-2 border border-gray-200 rounded-md hover:bg-slate-200 shadow-md"
             type="button"
@@ -83,12 +79,19 @@ const UrlPageQR = () => {
             <span className="text-gray-500">When</span>
           </div>
           <div>
-            {staticContent.time.toLocaleDateString("en-IN", {
-              weekday: "short",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+            {content?.startOn
+              ? new Date(content.startOn).toLocaleDateString("en-IN", {
+                  weekday: "short",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
+              : staticContent.time.toLocaleDateString("en-IN", {
+                  weekday: "short",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
           </div>
         </div>
         <hr className="border border-gray-200 w-full" />
@@ -97,7 +100,7 @@ const UrlPageQR = () => {
             <FaLocationPin />
             <span className="text-gray-500">Where</span>
           </div>
-          <div>{staticContent.vanue}</div>
+          <div>{content?.vanue ? content.vanue : staticContent.vanue}</div>
         </div>
         <hr className="border border-gray-200 w-full" />
         <div className="px-2">

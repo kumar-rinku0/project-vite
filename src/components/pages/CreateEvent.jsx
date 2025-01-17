@@ -1,5 +1,3 @@
-// import { useParams } from "react-router";
-
 import axios from "axios";
 import { useParams, useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
@@ -13,35 +11,35 @@ import {
 } from "../components/ui/select";
 import { useState } from "react";
 
-import { useContent } from "./ContentProvider";
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// import UrlPageQR from "./UrlPageQR";
 
 const CreateEvent = () => {
   const { orgId } = useParams();
   const navigate = useNavigate();
-  const { setContent, setImage } = useContent();
-  const [qrImage, setQrImage] = useState(null);
+  const [qrImage, setQrImage] = useState();
   const [inputs, setInputs] = useState({});
-  const [createPreview, setCreatePreview] = useState(false);
+  const [queryString, setQueryString] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
     if (name === "image") {
-      setQrImage(event.target.files[0]);
-      console.log(event.target.files[0]);
+      setQrImage(event.target.files);
+      console.log(event.target.files);
     }
     setInputs((values) => ({ ...values, [name]: value }));
   };
   const handleUpdate = () => {
-    setContent(inputs);
-    setImage(qrImage);
-    setCreatePreview(true);
+    const obj = {
+      ...inputs,
+      imgObj: qrImage,
+    };
+
+    // Convert object to URL query string
+    const qs = encodeURIComponent(JSON.stringify(obj));
+    setQueryString(qs);
   };
   const handleOnSubmit = (e) => {
     setLoading(true);
@@ -192,9 +190,10 @@ const CreateEvent = () => {
       <div className="relative max-h-[60vh]">
         <h2 className="text-center uppercase">screen preview</h2>
         <iframe
-          src={`/qrcodepage?preview=${createPreview}`}
+          src={`/qrcodepage?qs=${queryString}`}
           width="320px"
           height="640px"
+          // sandbox="allow-scripts allow-same-origin"
         />
       </div>
       <ToastContainer />
