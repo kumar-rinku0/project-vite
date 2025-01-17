@@ -29,13 +29,10 @@ const UrlPageQR = () => {
   const [content, setContent] = useState(null);
   useEffect(() => {
     if (qs) {
-      console.log("qs=", qs);
       const objFromQuery = JSON.parse(decodeURIComponent(qs));
-      console.log(objFromQuery);
       setContent(objFromQuery);
-      console.log(content.imgObj[0]);
     }
-  }, [qs, content]);
+  }, [qs]);
   return (
     <div className="w-full min-h-[100vh] flex sm:justify-center items-center">
       <div className="w-96 h-full flex flex-col justify-center items-start gap-4 px-2">
@@ -43,7 +40,7 @@ const UrlPageQR = () => {
           <div className="w-full h-full flex justify-center items-center py-4">
             {content?.imgObj ? (
               <img
-                src={URL.createObjectURL(content?.imgObj[0])}
+                src={content.imgObj}
                 alt={staticImg.filename}
                 className="w-full h-full object-cover"
               />

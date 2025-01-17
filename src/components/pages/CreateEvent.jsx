@@ -3,16 +3,17 @@ import { useParams, useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-  SelectTrigger,
-} from "../components/ui/select";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../components/ui/accordion";
 import { useState } from "react";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaWifi } from "react-icons/fa";
+import { FaCar, FaChair, FaTrain } from "react-icons/fa6";
 
 const CreateEvent = () => {
   const { orgId } = useParams();
@@ -21,26 +22,32 @@ const CreateEvent = () => {
   const [inputs, setInputs] = useState({});
   const [queryString, setQueryString] = useState("");
   const [loading, setLoading] = useState(false);
+  const [facility, setFacility] = useState({ wifi: false });
 
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
     if (name === "image") {
-      setQrImage(event.target.files);
-      console.log(event.target.files);
+      setQrImage(event.target.files[0]);
+      console.log(event.target.files[0]);
     }
     setInputs((values) => ({ ...values, [name]: value }));
   };
+
   const handleUpdate = () => {
     const obj = {
       ...inputs,
-      imgObj: qrImage,
+      imgObj: qrImage ? URL.createObjectURL(qrImage) : null,
     };
-
     // Convert object to URL query string
     const qs = encodeURIComponent(JSON.stringify(obj));
     setQueryString(qs);
   };
+  const handleBtnClick = (value) => {
+    setFacility((prevData) => ({ ...prevData, [value]: !prevData[value] }));
+    console.log(facility);
+  };
+
   const handleOnSubmit = (e) => {
     setLoading(true);
     console.log(inputs);
@@ -65,48 +72,56 @@ const CreateEvent = () => {
     <div className="flex flex-col sm:flex-row justify-center sm:justify-around items-center sm:items-start">
       <div className="flex flex-col p-4 justify-center items-center">
         <form onSubmit={handleOnSubmit} className="flex flex-col gap-4">
-          <div>
-            <label htmlFor="orgnization" className="text-sm">
-              Orgnization{" "}
-            </label>
-            <Input
-              type="text"
-              name="orgnization"
-              id="orgnization"
-              className="w-80"
-              onChange={handleChange}
-              value={inputs.orgnization || ""}
-              placeholder="Orgnization Name"
-            />
-          </div>
-          <div>
-            <label htmlFor="eventName" className="text-sm">
-              Title
-            </label>
-            <Input
-              type="text"
-              name="eventName"
-              id="eventName"
-              className="w-80"
-              onChange={handleChange}
-              value={inputs.eventName || ""}
-              placeholder="Event Name"
-            />
-          </div>
-          <div>
-            <label htmlFor="description" className="text-sm">
-              Description{" "}
-            </label>
-            <Input
-              type="text"
-              name="description"
-              id="description"
-              className="w-80"
-              onChange={handleChange}
-              value={inputs.description || ""}
-              placeholder="Event Description"
-            />
-          </div>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>Event Details</AccordionTrigger>
+              <AccordionContent className="flex flex-col gap-4 px-2">
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="orgnizer" className="text-sm">
+                    Orgnizer
+                  </label>
+                  <Input
+                    type="text"
+                    name="orgnizer"
+                    id="orgnizer"
+                    className="w-80"
+                    onChange={handleChange}
+                    value={inputs.orgnizer || ""}
+                    placeholder="Company or host name"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="eventName" className="text-sm">
+                    Title
+                  </label>
+                  <Input
+                    type="text"
+                    name="eventName"
+                    id="eventName"
+                    className="w-80"
+                    onChange={handleChange}
+                    value={inputs.eventName || ""}
+                    placeholder="Event Name"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="description" className="text-sm">
+                    Summary
+                  </label>
+                  <Input
+                    type="text"
+                    name="description"
+                    id="description"
+                    className="w-80"
+                    onChange={handleChange}
+                    value={inputs.description || ""}
+                    placeholder="Write a short summary."
+                  />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
           <div>
             <label htmlFor="image" className="text-sm">
               Image
@@ -163,17 +178,115 @@ const CreateEvent = () => {
             />
           </div>
           <div>
-            <Select>
-              <SelectTrigger className="w-80">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">draft</SelectItem>
-                <SelectItem value="live">live</SelectItem>
-                <SelectItem value="end">end</SelectItem>
-              </SelectContent>
-            </Select>
+            <label htmlFor="address" className="text-sm">
+              Address
+            </label>
+            <Input
+              type="text"
+              name="address"
+              id="address"
+              className="w-80"
+              onChange={handleChange}
+              value={inputs.address || ""}
+              placeholder="Enter Address"
+            />
           </div>
+          <div>
+            <label htmlFor="facility" className="text-sm">
+              Facility
+            </label>
+            <div className="flex items-center p-2 gap-4">
+              <input type="hidden" />
+              {/* <Input type="" /> */}
+              <FaWifi
+                type="button"
+                onClick={() => handleBtnClick("wifi")}
+                className={`${facility.wifi ? "text-green-500" : "text-black"}`}
+              />
+              <FaTrain
+                type="button"
+                onClick={() => handleBtnClick("train")}
+                className={`${
+                  facility.train ? "text-green-500" : "text-black"
+                }`}
+              />
+              <FaCar
+                type="button"
+                onClick={() => handleBtnClick("car")}
+                className={`${facility.car ? "text-green-500" : "text-black"}`}
+              />
+              <FaChair
+                type="button"
+                onClick={() => handleBtnClick("chair")}
+                className={`${
+                  facility.chair ? "text-green-500" : "text-black"
+                }`}
+              />
+            </div>
+          </div>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>Contect Orginizer</AccordionTrigger>
+              <AccordionContent className="flex flex-col gap-4 px-2">
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="contact" className="text-sm">
+                    Contact
+                  </label>
+                  <Input
+                    type="text"
+                    name="contact"
+                    id="contact"
+                    className="w-80"
+                    onChange={handleChange}
+                    value={inputs.contact || ""}
+                    placeholder="Contact person for the event!"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="phone" className="text-sm">
+                    Phone
+                  </label>
+                  <Input
+                    type="text"
+                    name="phone"
+                    id="phone"
+                    className="w-80"
+                    onChange={handleChange}
+                    value={inputs.phone || ""}
+                    placeholder="(000) 0000-9999"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="email" className="text-sm">
+                    Email
+                  </label>
+                  <Input
+                    type="email"
+                    name="email"
+                    id="email"
+                    className="w-80"
+                    onChange={handleChange}
+                    value={inputs.email || ""}
+                    placeholder="your@email.com"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="website" className="text-sm">
+                    Website
+                  </label>
+                  <Input
+                    type="url"
+                    name="website"
+                    id="website"
+                    className="w-80"
+                    onChange={handleChange}
+                    value={inputs.website || ""}
+                    placeholder="www.your-website.com"
+                  />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
           <Button className="w-80" type="submit" disable={loading}>
             Create QR
           </Button>
@@ -187,7 +300,7 @@ const CreateEvent = () => {
           </Button>
         </form>
       </div>
-      <div className="relative max-h-[60vh]">
+      <div className="relative max-h-[60vh] p-4">
         <h2 className="text-center uppercase">screen preview</h2>
         <iframe
           src={`/qrcodepage?qs=${queryString}`}
