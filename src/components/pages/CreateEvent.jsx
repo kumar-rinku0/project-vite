@@ -23,13 +23,28 @@ const CreateEvent = () => {
   const [queryString, setQueryString] = useState("");
   const [loading, setLoading] = useState(false);
   const [facility, setFacility] = useState({ wifi: false });
+  const [imageError, setImageError] = useState(""); // Added state for image error
 
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
     if (name === "image") {
-      setQrImage(event.target.files[0]);
-      console.log(event.target.files[0]);
+      const file = event.target.files[0];
+      const img = new Image();
+
+      img.onload = () => {
+        const { width, height } = img;
+        
+        if (width < 1000 || height < 500 || width > 3000 || height > 2000) {
+          setImageError("Image dimensions must be between 1000x500 and 3000x2000 pixels.");
+          setQrImage(null); // Reset the image
+        } else {
+          setImageError(""); // Clear error
+          setQrImage(file);
+        }
+      };
+
+      img.src = URL.createObjectURL(file);
     }
     setInputs((values) => ({ ...values, [name]: value }));
   };
@@ -43,6 +58,7 @@ const CreateEvent = () => {
     const qs = encodeURIComponent(JSON.stringify(obj));
     setQueryString(qs);
   };
+  
   const handleBtnClick = (value) => {
     setFacility((prevData) => ({ ...prevData, [value]: !prevData[value] }));
     console.log(facility);
@@ -134,6 +150,9 @@ const CreateEvent = () => {
               onChange={handleChange}
               value={inputs.image || ""}
             />
+            {imageError && (
+              <p className="text-red-500 text-xs mt-1">{imageError}</p>
+            )}
           </div>
           <div className="w-80 flex justify-between items-center content-center">
             <div>
