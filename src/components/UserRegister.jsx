@@ -28,10 +28,12 @@ const UserRegister = () => {
     setNextpage(true);
   };
 
-  const handleSubmitNext = (e) => {
+  const handleSubmitNext = async (e) => {
     e.preventDefault();
     setLoading(true);
     console.log(inputs);
+    const rootRes = await axios.post(`/api/v2/validate-otp`, inputs);
+    console.log(rootRes);
     if (otp === inputs.otp) {
       axios
         .post(`/api/v2/users/${eventId}`, inputs)
