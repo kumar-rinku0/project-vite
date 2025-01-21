@@ -1,10 +1,21 @@
-import { FaCalendar, FaLocationPin, FaMessage, FaShare } from "react-icons/fa6";
+import {
+  FaCalendar,
+  FaChair,
+  FaLocationPin,
+  FaMessage,
+  FaCar,
+  FaShare,
+  FaTrain,
+  FaLocationCrosshairs,
+  FaToolbox,
+} from "react-icons/fa6";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "../components/ui/popover";
 import { useEffect, useState } from "react";
+import { FaTools, FaWifi } from "react-icons/fa";
 
 const staticImg = {
   url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5KchjSSqPloa4eQ2VL9BG7D2QGJ0thHj_pA&s",
@@ -111,6 +122,21 @@ const UrlPageQR = () => {
           </div>
           <div>{content?.vanue ? content.vanue : staticContent.vanue}</div>
         </div>
+        {content?.facility && (
+          <div className="px-2">
+            <div className="flex gap-2 py-1 items-center">
+              <FaTools />
+              <span className="text-gray-500">Facility</span>
+            </div>
+            <div className="flex gap-2 p-2">
+              <span>{content?.facility?.wifi && <FaWifi />}</span>
+              <span>{content?.facility?.car && <FaCar />}</span>
+              <span>{content?.facility?.train && <FaTrain />}</span>
+              <span>{content?.facility?.chair && <FaChair />}</span>
+            </div>
+          </div>
+        )}
+
         <hr className="border border-gray-200 w-full" />
         <div className="px-2">
           <div className="flex gap-2 py-1 items-center">

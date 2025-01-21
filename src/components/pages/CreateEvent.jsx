@@ -50,7 +50,7 @@ const CreateEvent = () => {
       ...inputs,
       contact: { ...inputs.contact },
       imgObj: qrImage ? URL.createObjectURL(qrImage) : null,
-      facility,
+      facility: facility,
     };
     // Convert object to URL query string
     const qs = encodeURIComponent(JSON.stringify(obj));
