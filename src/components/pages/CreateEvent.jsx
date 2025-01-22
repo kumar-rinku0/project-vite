@@ -50,13 +50,10 @@ const CreateEvent = ({ edit }) => {
 
   const handleObjectChange = (event, obj) => {
     const { name, value } = event.target;
-    console.log(obj);
-    console.log(name);
     setInputs((values) => ({
       ...values,
       [obj]: { ...values[obj], [name]: value },
     }));
-    console.log(inputs);
   };
 
   const handleUpdate = () => {
@@ -82,6 +79,18 @@ const CreateEvent = ({ edit }) => {
     //   .post(`api/v3/events/uploadImage/userId/${orgId}`, inputs.image)
     //   .then((res) => console.log("image", res))
     //   .catch((err) => console.log("image", err));
+    axios
+      .post(
+        `api/v3/events/uploadImage/userId/${orgId}`,
+        { image: inputs.image },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((res) => console.log("image", res))
+      .catch((err) => console.log("image", err));
     axios
       .post(`/api/v3/events/${orgId}`, inputs)
       .then((res) => {
@@ -183,7 +192,7 @@ const CreateEvent = ({ edit }) => {
               id="image"
               className="w-80"
               onChange={handleChange}
-              value={inputs.image || ""}
+            // value={inputs.image || ""}
             />
           </div>
           <div className="w-80 flex justify-between items-center content-center">

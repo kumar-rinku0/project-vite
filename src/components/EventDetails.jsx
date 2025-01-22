@@ -74,7 +74,7 @@ const EventDetails = () => {
 
   const handleDeleteClick = async (eventId) => {
     try {
-      const res = await axios.delete(`/api/v1/events/${eventId}`);
+      const res = await axios.delete(`/api/v3/events/${eventId}`);
       console.log(res.data);
 
       setEventData(eventData.filter((event) => event.id !== eventId));
@@ -174,10 +174,10 @@ const EventDetails = () => {
               <td className="table-cell">{event.title}</td>
               <td className="table-cell">{event.venue}</td>
               <td className="table-cell">
-                {new Date(event.startOn).toLocaleDateString()}
+                {new Date(event.from).toLocaleDateString()}
               </td>
               <td className="table-cell">
-                {new Date(event.endOn).toLocaleDateString()}
+                {new Date(event.to).toLocaleDateString()}
               </td>
               <td className="table-cell">{event.status}</td>
               <td className="table-cell">
@@ -202,9 +202,9 @@ const EventDetails = () => {
                 </button>
                 <button
                   className="icon-button"
-                  onClick={() => handleEventClick(event._id)}
+                  onClick={() => handleEventClick(event.id)}
                 >
-                  {selectedEventId === event._id ? "Hide Users" : "Show Users"}
+                  {selectedEventId === event.id ? "Hide Users" : "Show Users"}
                 </button>
               </td>
             </tr>
@@ -262,10 +262,8 @@ const UserDetails = ({ eventId }) => {
 
   useEffect(() => {
     axios
-      .get(
-        `/api/event-user-mapping/event/${eventId}/user-group/{userGroup}/users`
-      )
-      .then((response) => setUsers(response.data.users))
+      .get(`/api/v2/users/${eventId}/list`)
+      .then((response) => setUsers(response.data.data.content))
       .catch((error) => console.error("Error fetching users:", error));
   }, [eventId]);
 
@@ -275,7 +273,7 @@ const UserDetails = ({ eventId }) => {
       <ul>
         {users.map((user) => (
           <li key={user.id}>
-            {user.firstName} - {user.email}
+            {user.name} - {user.email}
           </li>
         ))}
       </ul>
