@@ -17,9 +17,9 @@ const staticContent = {
   time: new Date(Date.UTC(2012, 11, 20, 3, 0, 0)),
   vanue: "Jaipur",
   info: {
-    orginizer: "Rajesh Parik",
-    phone: "493948239439",
-    email: "example@mail.com",
+    orginizer: "Sourabh Sharma",
+    phone: "9571908706",
+    email: "sohil612000@mail.com",
     website: "www.website.com",
   },
 };
@@ -78,17 +78,17 @@ const UrlPageQR = () => {
           <div>
             {content?.startOn
               ? new Date(content.startOn).toLocaleDateString("en-IN", {
-                  weekday: "short",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })
+                weekday: "short",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })
               : staticContent.time.toLocaleDateString("en-IN", {
-                  weekday: "short",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                weekday: "short",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
           </div>
         </div>
         <hr className="border border-gray-200 w-full" />

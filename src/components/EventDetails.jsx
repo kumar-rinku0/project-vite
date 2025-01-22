@@ -21,11 +21,11 @@ const EventDetails = () => {
     const fetchEventDetails = async () => {
       try {
         const response = await axios.get(
-          `/api/v1/eventmapping/user/${orgId}`
+          `/api/v3/events/${orgId}/list?type=ORGANIZER`
         );
         console.log(response.data);
-        setEventData(response.data.data);
-        setFilteredData(response.data.data);
+        setEventData(response.data.data.content);
+        setFilteredData(response.data.data.content);
       } catch (err) {
         setError("Failed to load event details", err);
         console.log(err);
@@ -72,18 +72,16 @@ const EventDetails = () => {
     );
   };
 
- 
   const handleDeleteClick = async (eventId) => {
     try {
       const res = await axios.delete(`/api/v1/events/${eventId}`);
       console.log(res.data);
-     
+
       setEventData(eventData.filter((event) => event.id !== eventId));
       setFilteredData(filteredData.filter((event) => event.id !== eventId));
     } catch (err) {
       setError("Failed to delete event");
       console.log(err);
-
     }
   };
 
@@ -126,7 +124,7 @@ const EventDetails = () => {
   };
 
   const handleCreateEventClick = () => {
-    navigate(`/${orgId}/create`);  
+    navigate(`/${orgId}/create`);
   };
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -138,10 +136,7 @@ const EventDetails = () => {
   if (error) return <p className="error-text">{error}</p>;
 
   return (
-
-    
     <div className="event-details-container">
-      
       <input
         className="search-bar"
         type="text"
@@ -150,11 +145,14 @@ const EventDetails = () => {
         onChange={handleSearchChange}
       />
 
-<div className="create-event-button-container">
-     <button className="create-event-button" onClick={handleCreateEventClick}>
-       Create Event
-     </button>
-   </div>
+      <div className="create-event-button-container">
+        <button
+          className="create-event-button"
+          onClick={handleCreateEventClick}
+        >
+          Create Event
+        </button>
+      </div>
       <table className="event-table">
         <thead>
           <tr>
@@ -173,7 +171,7 @@ const EventDetails = () => {
               <td className="table-cell">
                 {index + 1 + (currentPage - 1) * itemsPerPage}
               </td>
-              <td className="table-cell">{event.eventName}</td>
+              <td className="table-cell">{event.title}</td>
               <td className="table-cell">{event.venue}</td>
               <td className="table-cell">
                 {new Date(event.startOn).toLocaleDateString()}
@@ -187,20 +185,20 @@ const EventDetails = () => {
                   className="icon-button"
                   onClick={() => handleEditClick(event)}
                 >
-                  <FaEdit /> {/* Edit Icon */}
+                  <FaEdit />
                 </button>
 
                 <button
                   className="icon-button"
                   onClick={() => handleDeleteClick(event.id)}
                 >
-                  <FaTrashAlt /> {/*   delete btn */}
+                  <FaTrashAlt />
                 </button>
                 <button
                   className="icon-button"
                   onClick={() => handleSubmitClicktoGetQr(event)}
                 >
-                  <FaPaperPlane /> {/* Submit Icon */}
+                  <FaPaperPlane />
                 </button>
                 <button
                   className="icon-button"
@@ -214,7 +212,6 @@ const EventDetails = () => {
         </tbody>
       </table>
 
-      {/* Conditionally render UserDetails for the selected event */}
       {selectedEventId && (
         <div className="users-list">
           <h3>Registered Users for Event</h3>
@@ -238,9 +235,8 @@ const EventDetails = () => {
         {Array.from({ length: totalPages }, (_, index) => (
           <button
             key={index + 1}
-            className={`page-button ${
-              currentPage === index + 1 ? "active" : ""
-            }`}
+            className={`page-button ${currentPage === index + 1 ? "active" : ""
+              }`}
             onClick={() => handlePageChange(index + 1)}
           >
             {index + 1}
@@ -278,8 +274,8 @@ const UserDetails = ({ eventId }) => {
       <h5>Registered Users:</h5>
       <ul>
         {users.map((user) => (
-          <li key={user._id}>
-            {user.name} - {user.email}
+          <li key={user.id}>
+            {user.firstName} - {user.email}
           </li>
         ))}
       </ul>

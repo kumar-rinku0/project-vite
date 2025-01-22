@@ -141,6 +141,7 @@ body {
 
 /* For tablets and smaller devices */
 @media (max-width: 768px) {
+
   /* Form Card */
   .user-form-card,
   .event-form-card,
@@ -173,6 +174,7 @@ body {
 
 /* For smaller screens (mobile phones) */
 @media (max-width: 480px) {
+
   /* Title */
   .user-form-title,
   .event-form-title,
@@ -245,7 +247,8 @@ body {
 /* Styling for the search input */
 .search-bar {
   width: 100%;
-  padding: 12px 15px 12px 45px; /* Adjust for icon spacing */
+  padding: 12px 15px 12px 45px;
+  /* Adjust for icon spacing */
   font-size: 16px;
   border: none;
   outline: none;
@@ -399,3 +402,6 @@ body {
   background-color: #45a049;
 }
 
+button.icon-button {
+  margin: 5px;
+}
