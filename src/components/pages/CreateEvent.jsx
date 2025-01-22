@@ -19,7 +19,7 @@ const CreateEvent = () => {
   const { orgId } = useParams();
   const navigate = useNavigate();
   const [qrImage, setQrImage] = useState();
-  const [inputs, setInputs] = useState({});
+  const [inputs, setInputs] = useState({ contact: {} });
   const [queryString, setQueryString] = useState("");
   const [loading, setLoading] = useState(false);
   const [facility, setFacility] = useState({ wifi: false });
@@ -49,10 +49,23 @@ const CreateEvent = () => {
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
+  const handleObjectChange = (event, obj) => {
+    const { name, value } = event.target;
+    console.log(obj);
+    console.log(name);
+    setInputs((values) => ({
+      ...values,
+      [obj]: { ...values[obj], [name]: value },
+    }));
+    console.log(inputs);
+  };
+
   const handleUpdate = () => {
     const obj = {
       ...inputs,
+      contact: { ...inputs.contact },
       imgObj: qrImage ? URL.createObjectURL(qrImage) : null,
+      facility: facility,
     };
     // Convert object to URL query string
     const qs = encodeURIComponent(JSON.stringify(obj));
@@ -93,27 +106,27 @@ const CreateEvent = () => {
               <AccordionTrigger>Event Details</AccordionTrigger>
               <AccordionContent className="flex flex-col gap-4 px-2">
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="orgnizer" className="text-sm">
-                    Orgnizer
+                  <label htmlFor="organization" className="text-sm">
+                    organization
                   </label>
                   <Input
                     type="text"
-                    name="orgnizer"
-                    id="orgnizer"
+                    name="organization"
+                    id="organization"
                     className="w-80"
                     onChange={handleChange}
-                    value={inputs.orgnizer || ""}
+                    value={inputs.organization || ""}
                     placeholder="Company or host name"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="eventName" className="text-sm">
+                  <label htmlFor="title" className="text-sm">
                     Title
                   </label>
                   <Input
                     type="text"
-                    name="eventName"
-                    id="eventName"
+                    name="title"
+                    id="title"
                     className="w-80"
                     onChange={handleChange}
                     value={inputs.eventName || ""}
@@ -121,13 +134,13 @@ const CreateEvent = () => {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="description" className="text-sm">
+                  <label htmlFor="summary" className="text-sm">
                     Summary
                   </label>
                   <Input
                     type="text"
-                    name="description"
-                    id="description"
+                    name="summary"
+                    id="summary"
                     className="w-80"
                     onChange={handleChange}
                     value={inputs.description || ""}
@@ -156,26 +169,26 @@ const CreateEvent = () => {
           </div>
           <div className="w-80 flex justify-between items-center content-center">
             <div>
-              <label htmlFor="startOn" className="text-sm">
+              <label htmlFor="from" className="text-sm">
                 From
               </label>
               <Input
                 type="date"
-                name="startOn"
-                id="startOn"
+                name="from"
+                id="from"
                 className="w-36 flex justify-center items-center"
                 onChange={handleChange}
                 value={inputs.startOn || ""}
               />
             </div>
             <div>
-              <label htmlFor="endOn" className="text-sm">
+              <label htmlFor="to" className="text-sm">
                 To
               </label>
               <Input
                 type="date"
-                name="endOn"
-                id="endOn"
+                name="to"
+                id="to"
                 className="w-36 flex justify-center items-center"
                 onChange={handleChange}
                 value={inputs.endOn || ""}
@@ -253,11 +266,11 @@ const CreateEvent = () => {
                   </label>
                   <Input
                     type="text"
-                    name="contact"
+                    name="name"
                     id="contact"
                     className="w-80"
-                    onChange={handleChange}
-                    value={inputs.contact || ""}
+                    onChange={(event) => handleObjectChange(event, "contact")}
+                    value={inputs.contact.name || ""}
                     placeholder="Contact person for the event!"
                   />
                 </div>
@@ -270,8 +283,8 @@ const CreateEvent = () => {
                     name="phone"
                     id="phone"
                     className="w-80"
-                    onChange={handleChange}
-                    value={inputs.phone || ""}
+                    onChange={(event) => handleObjectChange(event, "contact")}
+                    value={inputs.contact.phone || ""}
                     placeholder="(000) 0000-9999"
                   />
                 </div>
@@ -284,8 +297,8 @@ const CreateEvent = () => {
                     name="email"
                     id="email"
                     className="w-80"
-                    onChange={handleChange}
-                    value={inputs.email || ""}
+                    onChange={(event) => handleObjectChange(event, "contact")}
+                    value={inputs.contact.email || ""}
                     placeholder="your@email.com"
                   />
                 </div>
@@ -298,8 +311,8 @@ const CreateEvent = () => {
                     name="website"
                     id="website"
                     className="w-80"
-                    onChange={handleChange}
-                    value={inputs.website || ""}
+                    onChange={(event) => handleObjectChange(event, "contact")}
+                    value={inputs.contact.website || ""}
                     placeholder="www.your-website.com"
                   />
                 </div>

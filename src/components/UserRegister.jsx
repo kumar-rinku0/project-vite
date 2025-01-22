@@ -18,7 +18,7 @@ const UserRegister = () => {
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  const handleSubmit1 = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     const res = await axios.post(`/api/v2/send-otp`, inputs);
@@ -28,10 +28,12 @@ const UserRegister = () => {
     setNextpage(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmitNext = async (e) => {
     e.preventDefault();
     setLoading(true);
     console.log(inputs);
+    const rootRes = await axios.post(`/api/v2/validate-otp`, inputs);
+    console.log(rootRes);
     if (otp === inputs.otp) {
       axios
         .post(`/api/v2/users/${eventId}`, inputs)
@@ -49,11 +51,11 @@ const UserRegister = () => {
   };
 
   return (
-    <div>
+    <div className="h-[100vh] flex justify-center items-center">
       {!nextpage && (
         <div>
           <form
-            onSubmit={handleSubmit1}
+            onSubmit={handleSubmit}
             className="flex flex-col gap-4 justify-center items-center"
           >
             <div>
@@ -113,7 +115,7 @@ const UserRegister = () => {
       {nextpage && (
         <div>
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmitNext}
             className="flex flex-col gap-4 justify-center items-center"
           >
             <div>
