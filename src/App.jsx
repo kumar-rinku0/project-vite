@@ -24,15 +24,10 @@ function App() {
           {/* these 4 routes has to protect! */}
           <Route path="/:orgId" element={<EventDetails />} />
           <Route path="/:orgId/create" element={<CreateEvent edit={false} />} />
-<<<<<<< HEAD
-          <Route path="/:orgId/edit/:eventId" element={<CreateEvent edit={true} />} />
-          <Route path="/:orgId/edit/:eventId" element={<EditEvent />} />
-=======
           <Route
             path="/:orgId/edit/:eventId"
             element={<CreateEvent edit={true} />}
           />
->>>>>>> ebf2a6bb0350802b280a257969b4ff59944b0ecc
           <Route path="/show-qr" element={<ShowQR />} />
           {/* User registration and ticket routes */}
           <Route path="/:orgId/:eventId/register-user" element={<UserRegister />} />
