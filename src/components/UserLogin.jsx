@@ -49,7 +49,7 @@ function UserLogin() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`/api/v1/send-otp`, {
+      const response = await axios.post(`/api/v2/send-otp`, {
         email: formData.email,
         phone: formData.phone,
       });
@@ -75,7 +75,7 @@ function UserLogin() {
       console.log(name, value);
     }
     try {
-      const response = await axios.post(`/api/v1/validate-otp`, {
+      const response = await axios.post(`/api/v2/validate-otp`, {
         email: formData.email.trim(),
         phone: formData.phone.trim(),
         otp: formData.otp,
