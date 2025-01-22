@@ -18,7 +18,7 @@ const UserRegister = () => {
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  const handleSubmit1 = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     const res = await axios.post(`/api/v2/send-otp`, inputs);
@@ -28,7 +28,7 @@ const UserRegister = () => {
     setNextpage(true);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmitNext = async (e) => {
     e.preventDefault();
     setLoading(true);
     console.log(inputs);
@@ -51,12 +51,11 @@ const UserRegister = () => {
   };
 
   return (
-    <div className="user-form-container">
+    <div className="h-[100vh] flex justify-center items-center">
       {!nextpage && (
-        <div className="user-form-card">
-          <h2 className="user-form-title">PARTICIPANT FORM</h2>
+        <div>
           <form
-            onSubmit={handleSubmit1}
+            onSubmit={handleSubmit}
             className="flex flex-col gap-4 justify-center items-center"
           >
             <div>
@@ -116,7 +115,7 @@ const UserRegister = () => {
       {nextpage && (
         <div>
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmitNext}
             className="flex flex-col gap-4 justify-center items-center"
           >
             <div>

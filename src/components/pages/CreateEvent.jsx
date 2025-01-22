@@ -50,10 +50,13 @@ const CreateEvent = ({ edit }) => {
 
   const handleObjectChange = (event, obj) => {
     const { name, value } = event.target;
+    console.log(obj);
+    console.log(name);
     setInputs((values) => ({
       ...values,
       [obj]: { ...values[obj], [name]: value },
     }));
+    console.log(inputs);
   };
 
   const handleUpdate = () => {
