@@ -8,21 +8,35 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../components/ui/accordion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaWifi } from "react-icons/fa";
 import { FaCar, FaChair, FaTrain } from "react-icons/fa6";
 
-const CreateEvent = () => {
-  const { orgId } = useParams();
+const CreateEvent = ({ edit }) => {
+  const { orgId, eventId } = useParams();
   const navigate = useNavigate();
   const [qrImage, setQrImage] = useState();
   const [inputs, setInputs] = useState({ contact: {} });
   const [queryString, setQueryString] = useState("");
   const [loading, setLoading] = useState(false);
   const [facility, setFacility] = useState({ wifi: false });
+
+  useEffect(() => {
+    if (edit && eventId) {
+      axios
+        .get(`/api/v3/events/${eventId}`)
+        .then((res) => {
+          console.log(res);
+          setInputs(res.data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [edit, eventId]);
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -36,13 +50,10 @@ const CreateEvent = () => {
 
   const handleObjectChange = (event, obj) => {
     const { name, value } = event.target;
-    console.log(obj);
-    console.log(name);
     setInputs((values) => ({
       ...values,
       [obj]: { ...values[obj], [name]: value },
     }));
-    console.log(inputs);
   };
 
   const handleUpdate = () => {
@@ -58,7 +69,6 @@ const CreateEvent = () => {
   };
   const handleBtnClick = (value) => {
     setFacility((prevData) => ({ ...prevData, [value]: !prevData[value] }));
-    console.log(facility);
   };
 
   const handleOnSubmit = (e) => {
@@ -66,15 +76,48 @@ const CreateEvent = () => {
     console.log(inputs);
     e.preventDefault();
     axios
-      .post(`/api/v1/events/${orgId}`, inputs)
+      .post(
+        `api/v3/events/uploadImage/userId/${orgId}`,
+        { image: inputs.image },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((res) => console.log("image", res))
+      .catch((err) => console.log("image", err));
+    axios
+      .post(`/api/v3/events/${orgId}`, inputs)
       .then((res) => {
-        console.log(res.data);
-        toast.success("Event created successfully!");
+        console.log(res);
+        console.log("Event created successfully!");
         navigate(`/${orgId}`);
       })
       .catch((err) => {
-        console.error(err.response?.data?.message || "Error creating event");
-        toast.error("Failed to create event. Please try again.");
+        console.log(err);
+        console.log("Event not created successfully!");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const handleOnUpdate = (e) => {
+    setLoading(true);
+    console.log(inputs);
+    e.preventDefault();
+
+    axios
+      .put(`/api/v3/events/${eventId}`, inputs)
+      .then((res) => {
+        console.log(res);
+        console.log("Event updated successfully!");
+        navigate(`/${orgId}`);
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log("Event not updated successfully!");
       })
       .finally(() => {
         setLoading(false);
@@ -84,7 +127,7 @@ const CreateEvent = () => {
   return (
     <div className="flex flex-col sm:flex-row justify-center sm:justify-around items-center sm:items-start">
       <div className="flex flex-col p-4 justify-center items-center">
-        <form onSubmit={handleOnSubmit} className="flex flex-col gap-4">
+        <form className="flex flex-col gap-4" encType="multipart/form-data">
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
               <AccordionTrigger>Event Details</AccordionTrigger>
@@ -113,7 +156,7 @@ const CreateEvent = () => {
                     id="title"
                     className="w-80"
                     onChange={handleChange}
-                    value={inputs.eventName || ""}
+                    value={inputs.title || ""}
                     placeholder="Event Name"
                   />
                 </div>
@@ -127,7 +170,7 @@ const CreateEvent = () => {
                     id="summary"
                     className="w-80"
                     onChange={handleChange}
-                    value={inputs.description || ""}
+                    value={inputs.summary || ""}
                     placeholder="Write a short summary."
                   />
                 </div>
@@ -145,7 +188,7 @@ const CreateEvent = () => {
               id="image"
               className="w-80"
               onChange={handleChange}
-              value={inputs.image || ""}
+              // value={inputs.image || ""}
             />
           </div>
           <div className="w-80 flex justify-between items-center content-center">
@@ -159,7 +202,7 @@ const CreateEvent = () => {
                 id="from"
                 className="w-36 flex justify-center items-center"
                 onChange={handleChange}
-                value={inputs.startOn || ""}
+                value={inputs.from || ""}
               />
             </div>
             <div>
@@ -172,21 +215,21 @@ const CreateEvent = () => {
                 id="to"
                 className="w-36 flex justify-center items-center"
                 onChange={handleChange}
-                value={inputs.endOn || ""}
+                value={inputs.to || ""}
               />
             </div>
           </div>
           <div>
-            <label htmlFor="vanue" className="text-sm">
+            <label htmlFor="venue" className="text-sm">
               Vanue
             </label>
             <Input
               type="text"
-              name="vanue"
-              id="vanue"
+              name="venue"
+              id="venue"
               className="w-80"
               onChange={handleChange}
-              value={inputs.vanue || ""}
+              value={inputs.venue || ""}
               placeholder="Vanue Name"
             />
           </div>
@@ -300,16 +343,33 @@ const CreateEvent = () => {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-          <Button className="w-80" type="submit" disable={loading}>
-            Create QR
-          </Button>
+          {edit && (
+            <Button
+              className="w-80"
+              type="submit"
+              disable={loading}
+              onClick={handleOnUpdate}
+            >
+              Update Event
+            </Button>
+          )}
+          {!edit && (
+            <Button
+              className="w-80"
+              type="submit"
+              disable={loading}
+              onClick={handleOnSubmit}
+            >
+              Create Event
+            </Button>
+          )}
           <Button
             className="w-80"
             type="button"
             onClick={handleUpdate}
             disable={loading}
           >
-            Create Preview
+            See Preview
           </Button>
         </form>
       </div>

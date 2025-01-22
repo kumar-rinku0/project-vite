@@ -21,11 +21,11 @@ const EventDetails = () => {
     const fetchEventDetails = async () => {
       try {
         const response = await axios.get(
-          `/api/v1/eventmapping/user/${orgId}`
+          `/api/v3/events/${orgId}/list?type=ORGANIZER`
         );
         console.log(response.data);
-        setEventData(response.data.data);
-        setFilteredData(response.data.data);
+        setEventData(response.data.data.content);
+        setFilteredData(response.data.data.content);
       } catch (err) {
         setError("Failed to load event details", err);
         console.log(err);
@@ -72,18 +72,16 @@ const EventDetails = () => {
     );
   };
 
- 
   const handleDeleteClick = async (eventId) => {
     try {
-      const res = await axios.delete(`/api/v1/events/${eventId}`);
+      const res = await axios.delete(`/api/v3/events/${eventId}`);
       console.log(res.data);
-     
+
       setEventData(eventData.filter((event) => event.id !== eventId));
       setFilteredData(filteredData.filter((event) => event.id !== eventId));
     } catch (err) {
       setError("Failed to delete event");
       console.log(err);
-
     }
   };
 
@@ -126,7 +124,7 @@ const EventDetails = () => {
   };
 
   const handleCreateEventClick = () => {
-    navigate(`/${orgId}/create`);  
+    navigate(`/${orgId}/create`);
   };
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -138,10 +136,7 @@ const EventDetails = () => {
   if (error) return <p className="error-text">{error}</p>;
 
   return (
-
-    
     <div className="event-details-container">
-      
       <input
         className="search-bar"
         type="text"
@@ -150,11 +145,14 @@ const EventDetails = () => {
         onChange={handleSearchChange}
       />
 
-<div className="create-event-button-container">
-     <button className="create-event-button" onClick={handleCreateEventClick}>
-       Create Event
-     </button>
-   </div>
+      <div className="create-event-button-container">
+        <button
+          className="create-event-button"
+          onClick={handleCreateEventClick}
+        >
+          Create Event
+        </button>
+      </div>
       <table className="event-table">
         <thead>
           <tr>
@@ -173,13 +171,13 @@ const EventDetails = () => {
               <td className="table-cell">
                 {index + 1 + (currentPage - 1) * itemsPerPage}
               </td>
-              <td className="table-cell">{event.eventName}</td>
+              <td className="table-cell">{event.title}</td>
               <td className="table-cell">{event.venue}</td>
               <td className="table-cell">
-                {new Date(event.startOn).toLocaleDateString()}
+                {new Date(event.from).toLocaleDateString()}
               </td>
               <td className="table-cell">
-                {new Date(event.endOn).toLocaleDateString()}
+                {new Date(event.to).toLocaleDateString()}
               </td>
               <td className="table-cell">{event.status}</td>
               <td className="table-cell">
@@ -204,9 +202,9 @@ const EventDetails = () => {
                 </button>
                 <button
                   className="icon-button"
-                  onClick={() => handleEventClick(event._id)}
+                  onClick={() => handleEventClick(event.id)}
                 >
-                  {selectedEventId === event._id ? "Hide Users" : "Show Users"}
+                  {selectedEventId === event.id ? "Hide Users" : "Show Users"}
                 </button>
               </td>
             </tr>
@@ -266,10 +264,8 @@ const UserDetails = ({ eventId }) => {
 
   useEffect(() => {
     axios
-      .get(
-        `/api/event-user-mapping/event/${eventId}/user-group/{userGroup}/users`
-      )
-      .then((response) => setUsers(response.data.users))
+      .get(`/api/v2/users/${eventId}/list`)
+      .then((response) => setUsers(response.data.data.content))
       .catch((error) => console.error("Error fetching users:", error));
   }, [eventId]);
 
@@ -278,7 +274,7 @@ const UserDetails = ({ eventId }) => {
       <h5>Registered Users:</h5>
       <ul>
         {users.map((user) => (
-          <li key={user._id}>
+          <li key={user.id}>
             {user.name} - {user.email}
           </li>
         ))}

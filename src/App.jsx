@@ -23,8 +23,11 @@ function App() {
           <Route path="/qrcodepage" element={<UrlPageQR />} />
           {/* these 4 routes has to protect! */}
           <Route path="/:orgId" element={<EventDetails />} />
-          <Route path="/:orgId/create" element={<CreateEvent />} />
-          <Route path="/:orgId/edit/:eventId" element={<EditEvent />} />
+          <Route path="/:orgId/create" element={<CreateEvent edit={false} />} />
+          <Route
+            path="/:orgId/edit/:eventId"
+            element={<CreateEvent edit={true} />}
+          />
           <Route path="/show-qr" element={<ShowQR />} />
           {/* User registration and ticket routes */}
           <Route
