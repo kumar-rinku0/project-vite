@@ -8,35 +8,21 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../components/ui/accordion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaWifi } from "react-icons/fa";
 import { FaCar, FaChair, FaTrain } from "react-icons/fa6";
 
-const CreateEvent = ({ edit }) => {
-  const { orgId, eventId } = useParams();
+const CreateEvent = () => {
+  const { orgId } = useParams();
   const navigate = useNavigate();
   const [qrImage, setQrImage] = useState();
-  const [inputs, setInputs] = useState({ contact: {} });
+  const [inputs, setInputs] = useState({});
   const [queryString, setQueryString] = useState("");
   const [loading, setLoading] = useState(false);
   const [facility, setFacility] = useState({ wifi: false });
-
-  useEffect(() => {
-    if (edit && eventId) {
-      axios
-        .get(`/api/v3/events/${eventId}`)
-        .then((res) => {
-          console.log(res);
-          setInputs(res.data.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [edit, eventId]);
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -48,20 +34,10 @@ const CreateEvent = ({ edit }) => {
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  const handleObjectChange = (event, obj) => {
-    const { name, value } = event.target;
-    setInputs((values) => ({
-      ...values,
-      [obj]: { ...values[obj], [name]: value },
-    }));
-  };
-
   const handleUpdate = () => {
     const obj = {
       ...inputs,
-      contact: { ...inputs.contact },
       imgObj: qrImage ? URL.createObjectURL(qrImage) : null,
-      facility: facility,
     };
     // Convert object to URL query string
     const qs = encodeURIComponent(JSON.stringify(obj));
@@ -69,59 +45,23 @@ const CreateEvent = ({ edit }) => {
   };
   const handleBtnClick = (value) => {
     setFacility((prevData) => ({ ...prevData, [value]: !prevData[value] }));
+    console.log(facility);
   };
 
   const handleOnSubmit = (e) => {
     setLoading(true);
     console.log(inputs);
     e.preventDefault();
-    // axios
-    //   .post(`api/v3/events/uploadImage/userId/${orgId}`, inputs.image)
-    //   .then((res) => console.log("image", res))
-    //   .catch((err) => console.log("image", err));
     axios
-      .post(
-        `api/v3/events/uploadImage/userId/${orgId}`,
-        { image: inputs.image },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-      .then((res) => console.log("image", res))
-      .catch((err) => console.log("image", err));
-    axios
-      .post(`/api/v3/events/${orgId}`, inputs)
+      .post(`/api/v1/events/${orgId}`, inputs)
       .then((res) => {
-        console.log(res);
-        console.log("Event created successfully!");
+        console.log(res.data);
+        toast.success("Event created successfully!");
         navigate(`/${orgId}`);
       })
       .catch((err) => {
-        console.log(err);
-        console.log("Event not created successfully!");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  const handleOnUpdate = (e) => {
-    setLoading(true);
-    console.log(inputs);
-    e.preventDefault();
-
-    axios
-      .put(`/api/v3/events/${eventId}`, inputs)
-      .then((res) => {
-        console.log(res);
-        console.log("Event updated successfully!");
-        navigate(`/${orgId}`);
-      })
-      .catch((err) => {
-        console.log(err);
-        console.log("Event not updated successfully!");
+        console.error(err.response?.data?.message || "Error creating event");
+        toast.error("Failed to create event. Please try again.");
       })
       .finally(() => {
         setLoading(false);
@@ -131,50 +71,50 @@ const CreateEvent = ({ edit }) => {
   return (
     <div className="flex flex-col sm:flex-row justify-center sm:justify-around items-center sm:items-start">
       <div className="flex flex-col p-4 justify-center items-center">
-        <form className="flex flex-col gap-4" encType="multipart/form-data">
+        <form onSubmit={handleOnSubmit} className="flex flex-col gap-4">
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
               <AccordionTrigger>Event Details</AccordionTrigger>
               <AccordionContent className="flex flex-col gap-4 px-2">
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="organization" className="text-sm">
-                    organization
+                  <label htmlFor="orgnizer" className="text-sm">
+                    Orgnizer
                   </label>
                   <Input
                     type="text"
-                    name="organization"
-                    id="organization"
+                    name="orgnizer"
+                    id="orgnizer"
                     className="w-80"
                     onChange={handleChange}
-                    value={inputs.organization || ""}
+                    value={inputs.orgnizer || ""}
                     placeholder="Company or host name"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="title" className="text-sm">
+                  <label htmlFor="eventName" className="text-sm">
                     Title
                   </label>
                   <Input
                     type="text"
-                    name="title"
-                    id="title"
+                    name="eventName"
+                    id="eventName"
                     className="w-80"
                     onChange={handleChange}
-                    value={inputs.title || ""}
+                    value={inputs.eventName || ""}
                     placeholder="Event Name"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="summary" className="text-sm">
+                  <label htmlFor="description" className="text-sm">
                     Summary
                   </label>
                   <Input
                     type="text"
-                    name="summary"
-                    id="summary"
+                    name="description"
+                    id="description"
                     className="w-80"
                     onChange={handleChange}
-                    value={inputs.summary || ""}
+                    value={inputs.description || ""}
                     placeholder="Write a short summary."
                   />
                 </div>
@@ -197,34 +137,34 @@ const CreateEvent = ({ edit }) => {
           </div>
           <div className="w-80 flex justify-between items-center content-center">
             <div>
-              <label htmlFor="from" className="text-sm">
+              <label htmlFor="startOn" className="text-sm">
                 From
               </label>
               <Input
                 type="date"
-                name="from"
-                id="from"
+                name="startOn"
+                id="startOn"
                 className="w-36 flex justify-center items-center"
                 onChange={handleChange}
-                value={inputs.from || ""}
+                value={inputs.startOn || ""}
               />
             </div>
             <div>
-              <label htmlFor="to" className="text-sm">
+              <label htmlFor="endOn" className="text-sm">
                 To
               </label>
               <Input
                 type="date"
-                name="to"
-                id="to"
+                name="endOn"
+                id="endOn"
                 className="w-36 flex justify-center items-center"
                 onChange={handleChange}
-                value={inputs.to || ""}
+                value={inputs.endOn || ""}
               />
             </div>
           </div>
           <div>
-            <label htmlFor="venue" className="text-sm">
+            <label htmlFor="vanue" className="text-sm">
               Vanue
             </label>
             <Input
@@ -233,7 +173,7 @@ const CreateEvent = ({ edit }) => {
               id="venue"
               className="w-80"
               onChange={handleChange}
-              value={inputs.venue || ""}
+              value={inputs.vanue || ""}
               placeholder="Vanue Name"
             />
           </div>
@@ -257,7 +197,7 @@ const CreateEvent = ({ edit }) => {
             </label>
             <div className="flex items-center p-2 gap-4">
               <input type="hidden" />
-              {/* <Input type="" / > */}
+              {/* <Input type="" /> */}
               <FaWifi
                 type="button"
                 onClick={() => handleBtnClick("wifi")}
@@ -292,11 +232,11 @@ const CreateEvent = ({ edit }) => {
                   </label>
                   <Input
                     type="text"
-                    name="name"
+                    name="contact"
                     id="contact"
                     className="w-80"
-                    onChange={(event) => handleObjectChange(event, "contact")}
-                    value={inputs.contact.name || ""}
+                    onChange={handleChange}
+                    value={inputs.contact || ""}
                     placeholder="Contact person for the event!"
                   />
                 </div>
@@ -309,8 +249,8 @@ const CreateEvent = ({ edit }) => {
                     name="phone"
                     id="phone"
                     className="w-80"
-                    onChange={(event) => handleObjectChange(event, "contact")}
-                    value={inputs.contact.phone || ""}
+                    onChange={handleChange}
+                    value={inputs.phone || ""}
                     placeholder="(000) 0000-9999"
                   />
                 </div>
@@ -323,8 +263,8 @@ const CreateEvent = ({ edit }) => {
                     name="email"
                     id="email"
                     className="w-80"
-                    onChange={(event) => handleObjectChange(event, "contact")}
-                    value={inputs.contact.email || ""}
+                    onChange={handleChange}
+                    value={inputs.email || ""}
                     placeholder="your@email.com"
                   />
                 </div>
@@ -337,41 +277,24 @@ const CreateEvent = ({ edit }) => {
                     name="website"
                     id="website"
                     className="w-80"
-                    onChange={(event) => handleObjectChange(event, "contact")}
-                    value={inputs.contact.website || ""}
+                    onChange={handleChange}
+                    value={inputs.website || ""}
                     placeholder="www.your-website.com"
                   />
                 </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-          {edit && (
-            <Button
-              className="w-80"
-              type="submit"
-              disable={loading}
-              onClick={handleOnUpdate}
-            >
-              Update Event
-            </Button>
-          )}
-          {!edit && (
-            <Button
-              className="w-80"
-              type="submit"
-              disable={loading}
-              onClick={handleOnSubmit}
-            >
-              Create Event
-            </Button>
-          )}
+          <Button className="w-80" type="submit" disable={loading}>
+            Create QR
+          </Button>
           <Button
             className="w-80"
             type="button"
             onClick={handleUpdate}
             disable={loading}
           >
-            See Preview
+            Create Preview
           </Button>
         </form>
       </div>

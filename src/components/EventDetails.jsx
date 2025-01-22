@@ -76,7 +76,6 @@ const EventDetails = () => {
     try {
       const res = await axios.delete(`/api/v3/events/${eventId}`);
       console.log(res.data);
-
       setEventData(eventData.filter((event) => event.id !== eventId));
       setFilteredData(filteredData.filter((event) => event.id !== eventId));
     } catch (err) {
