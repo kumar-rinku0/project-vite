@@ -41,12 +41,12 @@ const CreateEvent = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    
+
     const formattedValues = {
       ...values,
       startOn: values.startOn ? formatDateTime(values.startOn) : "",
       endOn: values.endOn ? formatDateTime(values.endOn) : "",
-      status: values.status.toUpperCase(), 
+      status: values.status.toUpperCase(),
     };
 
     axios
