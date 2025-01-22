@@ -21,11 +21,11 @@ const EventDetails = () => {
     const fetchEventDetails = async () => {
       try {
         const response = await axios.get(
-          `/api/v1/eventmapping/user/${orgId}`
+          `/api/v2/events/${orgId}/list?type=ORGANIZER`
         );
         console.log(response.data);
-        setEventData(response.data.data);
-        setFilteredData(response.data.data);
+        setEventData(response.data.data.content);
+        setFilteredData(response.data.data.content);
       } catch (err) {
         setError("Failed to load event details", err);
         console.log(err);
@@ -72,18 +72,16 @@ const EventDetails = () => {
     );
   };
 
- 
   const handleDeleteClick = async (eventId) => {
     try {
       const res = await axios.delete(`/api/v1/events/${eventId}`);
       console.log(res.data);
-     
+
       setEventData(eventData.filter((event) => event.id !== eventId));
       setFilteredData(filteredData.filter((event) => event.id !== eventId));
     } catch (err) {
       setError("Failed to delete event");
       console.log(err);
-
     }
   };
 
@@ -94,7 +92,7 @@ const EventDetails = () => {
   };
 
   const handleFileChange = (event) => {
-    setFile(event.target.file[0]);
+    setFile(event.target.files[0]);
   };
 
   const handleFileUpload = async () => {
@@ -126,7 +124,7 @@ const EventDetails = () => {
   };
 
   const handleCreateEventClick = () => {
-    navigate(`/${orgId}/create`);  
+    navigate(`/${orgId}/create`);
   };
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -138,10 +136,7 @@ const EventDetails = () => {
   if (error) return <p className="error-text">{error}</p>;
 
   return (
-
-    
     <div className="event-details-container">
-      
       <input
         className="search-bar"
         type="text"
@@ -150,11 +145,11 @@ const EventDetails = () => {
         onChange={handleSearchChange}
       />
 
-<div className="create-event-button-container">
-     <button className="create-event-button" onClick={handleCreateEventClick}>
-       Create Event
-     </button>
-   </div>
+      <div className="create-event-button-container">
+        <button className="create-event-button" onClick={handleCreateEventClick}>
+          Create Event
+        </button>
+      </div>
       <table className="event-table">
         <thead>
           <tr>
@@ -204,9 +199,9 @@ const EventDetails = () => {
                 </button>
                 <button
                   className="icon-button"
-                  onClick={() => handleEventClick(event._id)}
+                  onClick={() => handleEventClick(event.id)}
                 >
-                  {selectedEventId === event._id ? "Hide Users" : "Show Users"}
+                  {selectedEventId === event.id ? "Hide Users" : "Show Users"}
                 </button>
               </td>
             </tr>
@@ -259,17 +254,17 @@ const EventDetails = () => {
   );
 };
 
-// UserDetails Component to show registered users
-// eslint-disable-next-line react/prop-types
 const UserDetails = ({ eventId }) => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
     axios
-      .get(
-        `/api/event-user-mapping/event/${eventId}/user-group/{userGroup}/users`
+      .get(`/api/v2/users/${eventId}/list`)
+      .then((response) => {
+        console.log(response);
+        setUsers(response.data.data.content);
+      }
       )
-      .then((response) => setUsers(response.data.users))
       .catch((error) => console.error("Error fetching users:", error));
   }, [eventId]);
 
@@ -278,8 +273,8 @@ const UserDetails = ({ eventId }) => {
       <h5>Registered Users:</h5>
       <ul>
         {users.map((user) => (
-          <li key={user._id}>
-            {user.name} - {user.email}
+          <li key={user.id}>
+            {user.firstName} - {user.email}
           </li>
         ))}
       </ul>

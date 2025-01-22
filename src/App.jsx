@@ -12,6 +12,7 @@ import CreateEvent from "./components/pages/CreateEvent";
 import UrlPageQR from "./components/pages/UrlPageQR";
 import Header from "@components/pages/Header";
 
+
 // app
 function App() {
   return (
@@ -35,6 +36,9 @@ function App() {
           <Route path="/ticket/:userId" element={<TicketPage />} />
           {/* Ticket page route */}
           <Route path="*" element={<NoPage />} />
+          <Route path="/:eventId/user" element={<UserRegister />} />
+          
+          
         </Route>
       </Routes>
     </Router>
