@@ -10,7 +10,6 @@ function UserLogin() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-
   const validateEmail = (email) => {
     // eslint-disable-next-line no-useless-escape
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
