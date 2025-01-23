@@ -14,12 +14,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaWifi } from "react-icons/fa";
 import { FaCar, FaChair, FaTrain } from "react-icons/fa6";
+import UploadImage from "./UploadImage";
 
 const CreateEvent = ({ edit }) => {
   const { orgId, eventId } = useParams();
   const navigate = useNavigate();
   const [qrImage, setQrImage] = useState();
-  const [inputs, setInputs] = useState({ contact: {} });
+  const [inputs, setInputs] = useState({ contact: {}, image: {} });
   const [queryString, setQueryString] = useState("");
   const [loading, setLoading] = useState(false);
   const [facility, setFacility] = useState({ wifi: false });
@@ -27,7 +28,7 @@ const CreateEvent = ({ edit }) => {
   useEffect(() => {
     if (edit && eventId) {
       axios
-        .get(`/api/v3/events/${eventId}`)
+        .get(`/api/v1/events/${eventId}`)
         .then((res) => {
           console.log(res);
           setInputs(res.data.data);
@@ -41,10 +42,6 @@ const CreateEvent = ({ edit }) => {
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
-    if (name === "image") {
-      setQrImage(event.target.files[0]);
-      console.log(event.target.files[0]);
-    }
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
@@ -76,19 +73,7 @@ const CreateEvent = ({ edit }) => {
     console.log(inputs);
     e.preventDefault();
     axios
-      .post(
-        `api/v3/events/uploadImage/userId/${orgId}`,
-        { image: inputs.image },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-      .then((res) => console.log("image", res))
-      .catch((err) => console.log("image", err));
-    axios
-      .post(`/api/v3/events/${orgId}`, inputs)
+      .post(`/api/v1/events/${orgId}`, inputs)
       .then((res) => {
         console.log(res);
         console.log("Event created successfully!");
@@ -107,9 +92,8 @@ const CreateEvent = ({ edit }) => {
     setLoading(true);
     console.log(inputs);
     e.preventDefault();
-
     axios
-      .put(`/api/v3/events/${eventId}`, inputs)
+      .put(`/api/v1/events/${eventId}`, inputs)
       .then((res) => {
         console.log(res);
         console.log("Event updated successfully!");
@@ -179,16 +163,12 @@ const CreateEvent = ({ edit }) => {
           </Accordion>
 
           <div>
-            <label htmlFor="image" className="text-sm">
-              Image
-            </label>
-            <Input
-              type="file"
-              name="image"
-              id="image"
-              className="w-80"
-              onChange={handleChange}
-              // value={inputs.image || ""}
+            <UploadImage
+              orgId={orgId}
+              inputs={inputs}
+              setInputs={setInputs}
+              qrImage={qrImage}
+              setQrImage={setQrImage}
             />
           </div>
           <div className="w-80 flex justify-between items-center content-center">

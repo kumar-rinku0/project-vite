@@ -21,7 +21,7 @@ const EventDetails = () => {
     const fetchEventDetails = async () => {
       try {
         const response = await axios.get(
-          `/api/v3/events/${orgId}/list?type=ORGANIZER`
+          `/api/v1/events/${orgId}/list?type=ORGANIZER`
         );
         console.log(response.data);
         setEventData(response.data.data.content);
@@ -74,7 +74,7 @@ const EventDetails = () => {
 
   const handleDeleteClick = async (eventId) => {
     try {
-      const res = await axios.delete(`/api/v3/events/${eventId}`);
+      const res = await axios.delete(`/api/v1/events/${eventId}`);
       console.log(res.data);
 
       setEventData(eventData.filter((event) => event.id !== eventId));
@@ -264,7 +264,7 @@ const UserDetails = ({ eventId }) => {
 
   useEffect(() => {
     axios
-      .get(`/api/v2/users/${eventId}/list`)
+      .get(`/api/v1/users/${eventId}/list`)
       .then((response) => setUsers(response.data.data.content))
       .catch((error) => console.error("Error fetching users:", error));
   }, [eventId]);

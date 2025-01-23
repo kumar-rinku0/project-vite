@@ -3,164 +3,119 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Label } from "./components/ui/label";
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
 
 function UserLogin() {
-  const [formData, setFormData] = useState({});
-  const [step, setStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [inputs, setInputs] = useState({});
+  const [nextpage, setNextpage] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [otp, setOtp] = useState(null);
   const navigate = useNavigate();
-
-  const validateEmail = (email) => {
-    // eslint-disable-next-line no-useless-escape
-    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    return emailRegex.test(email);
-  };
-
-  const validateMobileNumber = (number) => {
-    const mobileRegex = /^[0-9]{10}$/;
-    return mobileRegex.test(number);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name == "otp") {
-      console.log(name, value);
-    }
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    setInputs((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmitData = (e) => {
     e.preventDefault();
-
-    if (!validateEmail(formData.email)) {
-      toast.error("Invalid email address.", {
-        position: "top-right",
+    setLoading(true);
+    axios
+      .post("/api/v1/send-otp", inputs)
+      .then((res) => {
+        console.log(res);
+        setOtp(res.data.data.otp);
+        setNextpage(true);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-      return;
-    }
-
-    if (!validateMobileNumber(formData.phone)) {
-      toast.error("Invalid mobile number. It should be 10 digits.", {
-        position: "top-right",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const response = await axios.post(`/api/v2/send-otp`, {
-        email: formData.email,
-        phone: formData.phone,
-      });
-      console.log(response.data);
-      toast.success(response.data.status, {
-        position: "top-right",
-      });
-      setStep(2);
-    } catch (error) {
-      console.error("Error sending OTP:", error);
-      toast.error("Failed to send OTP", {
-        position: "top-right",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
-  const handleValidateOTP = async (e) => {
-    setIsSubmitting(true);
-    const { name, value } = e.target;
-    if (name == "otp") {
-      console.log(name, value);
-    }
-    try {
-      const response = await axios.post(`/api/v2/validate-otp`, {
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
-        otp: formData.otp,
-      });
-
-      if (response.data.status && response.data.data.id) {
-        const orgId = response.data.data.id;
-        toast.success(response.data.message, {
-          position: "top-right",
+  const handleSubmitOTP = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    if (inputs.otp.trim() === otp) {
+      axios
+        .post("api/v1/validate-otp", inputs)
+        .then((res) => {
+          console.log(res.data);
+          const { id } = res.data.data;
+          navigate(`/${id}`);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setLoading(false);
         });
-        navigate(`/${orgId}`);
-      } else {
-        toast.error("Invalid OTP. Please try again!", {
-          position: "top-right",
-        });
-      }
-    } catch (error) {
-      console.error("Error validating OTP:", error);
-      toast.error("Error validating OTP", {
-        position: "top-right",
-      });
-    } finally {
-      setIsSubmitting(false);
     }
+    setLoading(true);
   };
 
   return (
-    <div className="user-form-container">
+    <div className="min-h-[100vh] flex justify-center items-center">
       <ToastContainer />
-      <div className="user-form-card">
-        <h2 className="user-form-title">Organization Form</h2>
-
-        {step === 1 && (
-          <form onSubmit={handleSubmit}>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              className="user-form-input"
-              value={formData.email || ""}
-              onChange={handleChange}
-              required
-            />
-
-            <input
-              type="number"
-              name="phone"
-              placeholder="Enter your mobile number"
-              className="user-form-input"
-              value={formData.phone || ""}
-              onChange={handleChange}
-              required
-            />
-
-            <button
-              type="submit"
-              className="user-form-button"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Submitting..." : "Submit"}
-            </button>
+      <div className="flex flex-col gap-4 justify-center items-center">
+        <h2>Get Started</h2>
+        {!nextpage && (
+          <form onSubmit={handleSubmitData} className="flex flex-col gap-4">
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                type="email"
+                name="email"
+                id="email"
+                placeholder="Enter your email"
+                className="w-80"
+                value={inputs.email || ""}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                type="number"
+                name="phone"
+                id="phone"
+                className="w-80"
+                placeholder="Enter your mobile number"
+                value={inputs.phone || ""}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Submitting..." : "Submit"}
+            </Button>
           </form>
         )}
 
-        {step === 2 && (
-          <div>
-            <input
-              type="text"
-              placeholder="Enter OTP"
-              className="user-form-otp-input"
-              name="otp"
-              value={formData.otp}
-              onChange={handleChange}
-              required
-            />
-
-            <button
-              type="button"
-              className="user-form-button"
-              onClick={handleValidateOTP}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Validating..." : "Validate OTP"}
-            </button>
-          </div>
+        {nextpage && (
+          <form onSubmit={handleSubmitOTP}>
+            <div>
+              <Label htmlFor="otp">OTP</Label>
+              <Input
+                type="number"
+                placeholder="Enter OTP"
+                name="otp"
+                id="otp"
+                className="w-80"
+                value={inputs.otp}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Validating..." : "Validate OTP"}
+            </Button>
+          </form>
         )}
       </div>
     </div>
