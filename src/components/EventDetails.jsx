@@ -1,19 +1,28 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router";
-import { FaEdit, FaPaperPlane } from "react-icons/fa"; // Import FontAwesome icons
 
-const url = "/api";
+import {
+  FaEdit,
+  FaPaperPlane,
+  FaUpload,
+  FaTrashAlt,
+  FaPlus,
+  FaEyeSlash,
+  FaEye,
+} from "react-icons/fa"; // Import FontAwesome icons
 
-export const EventDetails = () => {
+
+const EventDetails = () => {
   const { orgId } = useParams();
   const [eventData, setEventData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedEventId, setSelectedEventId] = useState(null); // State to track selected event
+  const [selectedEventId, setSelectedEventId] = useState(null);
   const navigate = useNavigate();
 
   const itemsPerPage = 10;
@@ -21,11 +30,15 @@ export const EventDetails = () => {
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const response = await axios.get(`${url}/${orgId}`);
-        setEventData(response.data);
-        setFilteredData(response.data);
+        const response = await axios.get(
+          `/api/v1/events/${orgId}/list?type=ORGANIZER`
+        );
+        console.log(response.data);
+        setEventData(response.data.data.content);
+        setFilteredData(response.data.data.content);
       } catch (err) {
-        setError("Failed to load event details");
+        setError("Failed to load event details", err);
+        console.log(err);
       } finally {
         setIsLoading(false);
       }
@@ -49,17 +62,17 @@ export const EventDetails = () => {
       setFilteredData(eventData);
     }
   };
+  const handleShowUsersClick = (eventId) => {
+    navigate(`/${orgId}/${eventId}/users`);
+  };
 
-  const handleSubmitClick = (event) => {
-    // Generate QR code data with event registration URL
-    const eventId = event._id;
-    // const qrData = `${window.location.origin}/${orgId}/${eventId}/register-user`;
-    const qrData = `${window.location.origin}/qrcodepage`;
-    navigate("/show-qr", { state: { qrCodeData: qrData } });
+  const handleSubmitClicktoGetQr = (eventId) => {
+    navigate(`/${orgId}/show-qr/${eventId}`);
   };
 
   const handleEditClick = (event) => {
-    const eventId = event._id;
+    const eventId = event.id;
+    console.log(event);
     navigate(`/${orgId}/edit/${eventId}`);
   };
 
@@ -69,10 +82,63 @@ export const EventDetails = () => {
     );
   };
 
+  const handleDeleteClick = async (eventId) => {
+    try {
+      const res = await axios.delete(`/api/v1/events/${eventId}`);
+      console.log(res.data);
+
+      setEventData(eventData.filter((event) => event.id !== eventId));
+      setFilteredData(filteredData.filter((event) => event.id !== eventId));
+    } catch (err) {
+      setError("Failed to delete event");
+      console.log(err);
+    }
+  };
+
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
     }
+  };
+
+  const handleFileChange = (event) => {
+    setFile(event.target.file[0]);
+  };
+
+  const handleFileUpload = async () => {
+    if (!file) {
+      alert("Please select a file before uploading.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(
+        `/api/upload-users/${selectedEventId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      alert("Users uploaded successfully.");
+      setFile(null);
+      console.log(response);
+    } catch (err) {
+      console.error("Error uploading file:", err);
+      alert("Failed to upload users.");
+    }
+  };
+
+  const handleCreateEventClick = () => {
+    navigate(`/${orgId}/create`);
+  };
+
+  const handleAddClick = (eventId) => {
+    navigate(`/${orgId}/${eventId}/register-user`);
   };
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -85,13 +151,23 @@ export const EventDetails = () => {
 
   return (
     <div className="event-details-container">
-      <input
-        className="search-bar"
-        type="text"
-        placeholder="Search by name or ID"
-        value={searchQuery}
-        onChange={handleSearchChange}
-      />
+
+
+      <div className="create-event-button-container">
+        <input
+          className="search-bar"
+          type="text"
+          placeholder="Search by name or ID"
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
+        <button
+          className="create-event-button"
+          onClick={handleCreateEventClick}
+        >
+          Create Event
+        </button>
+      </div>
       <table className="event-table">
         <thead>
           <tr>
@@ -106,17 +182,17 @@ export const EventDetails = () => {
         </thead>
         <tbody>
           {currentEvents.map((event, index) => (
-            <tr key={event._id} className="table-row">
+            <tr key={event.id} className="table-row">
               <td className="table-cell">
                 {index + 1 + (currentPage - 1) * itemsPerPage}
               </td>
-              <td className="table-cell">{event.name}</td>
+              <td className="table-cell">{event.title}</td>
               <td className="table-cell">{event.venue}</td>
               <td className="table-cell">
-                {new Date(event.startDate).toLocaleDateString()}
+                {new Date(event.from).toLocaleDateString()}
               </td>
               <td className="table-cell">
-                {new Date(event.endDate).toLocaleDateString()}
+                {new Date(event.to).toLocaleDateString()}
               </td>
               <td className="table-cell">{event.status}</td>
               <td className="table-cell">
@@ -126,28 +202,50 @@ export const EventDetails = () => {
                 >
                   <FaEdit /> {/* Edit Icon */}
                 </button>
+
                 <button
                   className="icon-button"
-                  onClick={() => handleSubmitClick(event)}
+                  onClick={() => handleDeleteClick(event.id)}
+                >
+                  <FaTrashAlt /> {/*   delete btn */}
+                </button>
+                <button
+                  className="icon-button"
+                  onClick={() => handleSubmitClicktoGetQr(event.id)}
                 >
                   <FaPaperPlane /> {/* Submit Icon */}
                 </button>
+
                 <button
                   className="icon-button"
-                  onClick={() => handleEventClick(event._id)}
+                  onClick={() => handleShowUsersClick(event.id)}
+
                 >
-                  {selectedEventId === event._id ? "Hide Users" : "Show Users"}
+                  {selectedEventId === event.id ? <FaEyeSlash /> : <FaEye />}
                 </button>
+                <button
+                  className="icon-button"
+                  onClick={() => handleAddClick(event.id)}
+                >
+                  <FaPlus />
+
+
+                </button>
+
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Conditionally render UserDetails for the selected event */}
+
       {selectedEventId && (
         <div className="users-list">
           <h3>Registered Users for Event</h3>
+          <input type="file" onChange={handleFileChange} />
+          <button onClick={handleFileUpload} className="upload-button">
+            <FaUpload /> Upload Users
+          </button>
           <UserDetails eventId={selectedEventId} />
         </div>
       )}
@@ -164,9 +262,8 @@ export const EventDetails = () => {
         {Array.from({ length: totalPages }, (_, index) => (
           <button
             key={index + 1}
-            className={`page-button ${
-              currentPage === index + 1 ? "active" : ""
-            }`}
+            className={`page-button ${currentPage === index + 1 ? "active" : ""
+              }`}
             onClick={() => handlePageChange(index + 1)}
           >
             {index + 1}
@@ -185,14 +282,14 @@ export const EventDetails = () => {
   );
 };
 
-// UserDetails Component to show registered users
+
 const UserDetails = ({ eventId }) => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
     axios
-      .get(`/api/${eventId}`)
-      .then((response) => setUsers(response.data.users))
+      .get(`/api/v1/users/${eventId}/list`)
+      .then((response) => setUsers(response.data.data.content))
       .catch((error) => console.error("Error fetching users:", error));
   }, [eventId]);
 
@@ -201,7 +298,7 @@ const UserDetails = ({ eventId }) => {
       <h5>Registered Users:</h5>
       <ul>
         {users.map((user) => (
-          <li key={user._id}>
+          <li key={user.id}>
             {user.name} - {user.email}
           </li>
         ))}
@@ -209,3 +306,5 @@ const UserDetails = ({ eventId }) => {
     </div>
   );
 };
+
+export default EventDetails;

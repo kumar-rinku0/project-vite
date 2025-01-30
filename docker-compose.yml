@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  gatepass-ui:
+    image: sourabhupwork/gatepass-ui:latest
+    ports:
+      - "3000:3000" # Expose the UI on localhost:3000
+    environment:
+      API_BASE_URL: "http://192.168.1.33:8080" # Point to the backend service
+    depends_on:
+      - gatepass-backend # Ensure backend starts before frontend
+
+  gatepass-backend:
+    image: sourabhupwork/gatepass:latest
+    ports:
+      - "8080:8080" # Expose the backend on localhost:8080
